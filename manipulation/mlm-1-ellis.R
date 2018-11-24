@@ -87,7 +87,39 @@ ds <-
   tibble::rowid_to_column("subject_wave_id")
 
 
+# ---- isolate-subject ---------------------------------------------------------
+ds_subject <-
+  ds %>%
+  dplyr::select(
+    subject_id,
+    county_id,
+    year,
+    age
+  ) %>%
+  dplyr::distinct(.keep_all = T) %>%
+  dplyr::group_by(subject_id) %>%
+  dplyr::summarize(
+    county_id_count = dplyr::n_distinct(county_id),
+    county_id       = OuhscMunge::first_nonmissing(county_id),
+    year_min        = min(year, na.rm=T),
+    year_max        = max(year, na.rm=T),
+    age_min         = min(age, na.rm=T),
+    age_max         = max(age, na.rm=T),
+  ) %>%
+  dplyr::ungroup()
+
+
 # ---- verify-values -----------------------------------------------------------
+# OuhscMunge::verify_value_headstart(ds_subject)
+checkmate::assert_factor(  ds_subject$subject_id      , any.missing=F                          , unique=T)
+checkmate::assert_integer( ds_subject$county_id       , any.missing=F , lower=51, upper=72     )
+checkmate::assert_integer( ds_subject$county_id_count , any.missing=F , lower=1       )
+checkmate::assert_integer( ds_subject$year_min        , any.missing=F , lower=2000, upper=2005 )
+checkmate::assert_integer( ds_subject$year_max        , any.missing=F , lower=2009, upper=2014 )
+checkmate::assert_integer( ds_subject$age_min         , any.missing=F , lower=70, upper=75     )
+checkmate::assert_integer( ds_subject$age_max         , any.missing=F , lower=79, upper=84     )
+
+
 # OuhscMunge::verify_value_headstart(ds)
 checkmate::assert_integer( ds$subject_wave_id   , any.missing=F , lower=1, upper=200     , unique=T)
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
@@ -109,7 +141,7 @@ subject_wave_combo   <- paste(ds$subject_id, ds$wave_id)
 # Light way to test combination
 checkmate::assert_character(subject_wave_combo, min.chars=3            , any.missing=F, unique=T)
 # Vigilant way to test combination
-checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{1,3} \\d{1,2}$"   , any.missing=F, unique=T)
+checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{4} \\d{1,2}$"   , any.missing=F, unique=T)
 
 # # Two ways to diagnose/identify bad patterns
 which(!grepl("^\\d{1,3} \\d{1,2}$", subject_wave_combo))                  # Ideally this is an empty set (ie, `integer(0)`)
@@ -117,11 +149,20 @@ subject_wave_combo[!grepl("^\\d{1,3} \\d{1,2}$", subject_wave_combo)]     # Idea
 
 # ---- specify-columns-to-upload -----------------------------------------------
 # dput(colnames(ds)) # Print colnames for line below.
+columns_to_write_subject <- c(
+  "subject_id",
+  "county_id",
+  "county_id_count",
+  "year_min",
+  "year_max",
+  "age_min",
+  "age_max"
+)
 columns_to_write <- c(
   "subject_wave_id", "subject_id",
   "wave_id", "year",
   "age", "age_cut_3", "age_80_plus",
-  "county_id",
+  #"county_id",
   "int_factor_1", "slope_factor_1",
   "cog_1", "cog_2", "cog_3",
   "phys_1", "phys_2", "phys_3"
@@ -146,9 +187,20 @@ rm(columns_to_write)
 #   * the data is relational and
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
 # cat(dput(colnames(ds)), sep = "\n")
-sql_create_mlm_1 <- "
-  DROP TABLE mlm_1;
+sql_create_tables <- "
 
+  DROP TABLE subject;
+  CREATE TABLE `subject` (
+    subject_id              INT NOT NULL PRIMARY KEY,
+    county_id               INT NOT NULL,
+    county_id_count         INT NOT NULL,
+    year_min                FLOAT NOT NULL,
+    year_max                FLOAT NOT NULL,
+    age_min                 FLOAT NOT NULL,
+    age_max                 FLOAT NOT NULL
+  );
+
+  DROP TABLE mlm_1;
   CREATE TABLE `mlm_1` (
     subject_wave_id         INT NOT NULL PRIMARY KEY,
     subject_id              INT NOT NULL,
@@ -156,7 +208,7 @@ sql_create_mlm_1 <- "
     year                    INT NOT NULL,
     age                     INT NOT NULL,
     age_cut_3               VARCHAR(5) NOT NULL,
-    county_id               INT NOT NULL
+    -- county_id               INT NOT NULL,
     age_80_plus             BIT NOT NULL,
     int_factor_1            FLOAT NOT NULL,
     slope_factor_1          FLOAT NOT NULL,
@@ -177,13 +229,15 @@ DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated eac
 DBI::dbListTables(cnn)
 
 # Create tables
-DBI::dbSendQuery(cnn, sql_create_mlm_1)
+DBI::dbSendQuery(cnn, sql_create_tables)
 DBI::dbListTables(cnn)
 
 # Write to database
 ds_slim %>%
   # dplyr::mutate_if(is.logical, as.integer) %>%        # Some databases & drivers need 0/1 instead of FALSE/TRUE.
 DBI::dbWriteTable(cnn, name='mlm_1',              value=.,        append=TRUE, row.names=FALSE)
+
+DBI::dbWriteTable(cnn, name='subject',            value=ds_subject,        append=TRUE, row.names=FALSE)
 
 # Close connection
 DBI::dbDisconnect(cnn)

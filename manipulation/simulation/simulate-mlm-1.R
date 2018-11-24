@@ -31,6 +31,10 @@ wave_count          <- 10
 possible_year_start <- 2000:2005
 possible_age_start  <- 70:75
 possible_county_id  <- c(51L, 55L, 72L)
+possible_county_index  <- seq_along(possible_county_id)
+
+int_county          <- c(2, 2.1, 4)
+slope_county        <- c(-.04, -.06, -.2)
 
 cor_factor_1_vs_2   <- c(.3, .005)          # Int & slope
 loadings_factor_1   <- c(.4, .5, .6)
@@ -46,15 +50,16 @@ sigma_factor_2      <- c(.2, .3, .5)
 # ---- generate ----------------------------------------------------------------
 ds_subject <-
   tibble::tibble(
-    subject_id      = factor(seq_len(subject_count)),
+    subject_id      = factor(1000 + seq_len(subject_count)),
     year_start      = sample(possible_year_start, size=subject_count, replace=T),
     age_start       = sample(possible_age_start , size=subject_count, replace=T),
-    county_id       = sample(possible_county_id , size=subject_count, replace=T)
+    county_index    = sample(possible_county_index , size=subject_count, replace=T),
+    county_id       = possible_county_id[county_index]
 
   ) %>%
   dplyr::mutate(
-    int_factor_1    = rnorm(n=subject_count, mean=10.0, sd=2.0),
-    slope_factor_1  = rnorm(n=subject_count, mean= 0.05, sd=0.04),
+    int_factor_1    = int_county[county_index]   + rnorm(n=subject_count, mean=10.0, sd=2.0),
+    slope_factor_1  = slope_county[county_index] + rnorm(n=subject_count, mean= 0.05, sd=0.04),
 
     int_factor_2    = rnorm(n=subject_count, mean=5.0, sd=0.8) + (cor_factor_1_vs_2[1] * int_factor_1),
     slope_factor_2  = rnorm(n=subject_count, mean= 0.03, sd=0.02) + (cor_factor_1_vs_2[2] * int_factor_1)
@@ -164,6 +169,11 @@ ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
   theme(legend.position="top")
 
 # ---- verify-values -----------------------------------------------------------
+# OuhscMunge::verify_value_headstart(ds_subject)
+# checkmate::assert_factor(  ds_subject$subject_id     , any.missing=F                          , unique=T)
+# checkmate::assert_integer( ds_subject$county_id      , any.missing=F , lower=51, upper=72     )
+
+
 # OuhscMunge::verify_value_headstart(ds)
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
@@ -184,7 +194,7 @@ checkmate::assert_numeric( ds$phys_2            , any.missing=F , lower=0, upper
 checkmate::assert_numeric( ds$phys_3            , any.missing=F , lower=0, upper=20      )
 
 subject_wave_combo   <- paste(ds$subject_id, ds$wave_id)
-checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{1,3} \\d{1,2}$"   , any.missing=F, unique=T)
+checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{4} \\d{1,2}$"   , any.missing=F, unique=T)
 
 # ---- specify-columns-to-upload -----------------------------------------------
 # dput(colnames(ds)) # Print colnames for line below.
