@@ -26,6 +26,8 @@ requireNamespace("OuhscMunge"   ) # remotes::install_github(repo="OuhscBbmc/Ouhs
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
 config                         <- config::get()
+path_db                        <- config$path_database
+
 figure_path <- 'stitched-output/manipulation/ellis/mlm-1-ellis/'
 
 col_types <- readr::cols_only(
@@ -33,6 +35,7 @@ col_types <- readr::cols_only(
   wave_id             = readr::col_integer(),
   year                = readr::col_integer(),
   age                 = readr::col_integer(),
+  county_id           = readr::col_integer(),
   int_factor_1        = readr::col_double(),
   slope_factor_1      = readr::col_double(),
   cog_1               = readr::col_double(),
@@ -65,6 +68,7 @@ ds <-
     , "wave_id"
     , "year"
     , "age"
+    , "county_id"
     , "int_factor_1"
     , "slope_factor_1"
     , "cog_1"
@@ -92,6 +96,7 @@ checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, up
 checkmate::assert_integer( ds$age               , any.missing=F , lower=70, upper=85     )
 checkmate::assert_factor(  ds$age_cut_3         , any.missing=F                          )
 checkmate::assert_logical( ds$age_80_plus       , any.missing=F                          )
+checkmate::assert_integer( ds$county_id         , any.missing=F , lower=1, upper=77      )
 
 checkmate::assert_numeric( ds$cog_1             , any.missing=F , lower=0, upper=20      )
 checkmate::assert_numeric( ds$cog_2             , any.missing=F , lower=0, upper=20      )
@@ -116,6 +121,7 @@ columns_to_write <- c(
   "subject_wave_id", "subject_id",
   "wave_id", "year",
   "age", "age_cut_3", "age_80_plus",
+  "county_id",
   "int_factor_1", "slope_factor_1",
   "cog_1", "cog_2", "cog_3",
   "phys_1", "phys_2", "phys_3"
@@ -141,6 +147,8 @@ rm(columns_to_write)
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
 # cat(dput(colnames(ds)), sep = "\n")
 sql_create_mlm_1 <- "
+  DROP TABLE mlm_1;
+
   CREATE TABLE `mlm_1` (
     subject_wave_id         INT NOT NULL PRIMARY KEY,
     subject_id              INT NOT NULL,
@@ -148,6 +156,7 @@ sql_create_mlm_1 <- "
     year                    INT NOT NULL,
     age                     INT NOT NULL,
     age_cut_3               VARCHAR(5) NOT NULL,
+    county_id               INT NOT NULL
     age_80_plus             BIT NOT NULL,
     int_factor_1            FLOAT NOT NULL,
     slope_factor_1          FLOAT NOT NULL,
@@ -160,11 +169,11 @@ sql_create_mlm_1 <- "
   );"
 
 # Remove old DB
-if( file.exists(config$path_database) ) file.remove(config$path_database)
+# if( file.exists(path_db) ) file.remove(path_db)
 
 # Open connection
-cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=config$path_database)
-RSQLite::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
+cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
+DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
 DBI::dbListTables(cnn)
 
 # Create tables

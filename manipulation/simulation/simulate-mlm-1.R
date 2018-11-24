@@ -30,6 +30,7 @@ subject_count       <- 20
 wave_count          <- 10
 possible_year_start <- 2000:2005
 possible_age_start  <- 70:75
+possible_county_id  <- c(51L, 55L, 72L)
 
 cor_factor_1_vs_2   <- c(.3, .005)          # Int & slope
 loadings_factor_1   <- c(.4, .5, .6)
@@ -47,7 +48,9 @@ ds_subject <-
   tibble::tibble(
     subject_id      = factor(seq_len(subject_count)),
     year_start      = sample(possible_year_start, size=subject_count, replace=T),
-    age_start       = sample(possible_age_start , size=subject_count, replace=T)
+    age_start       = sample(possible_age_start , size=subject_count, replace=T),
+    county_id       = sample(possible_county_id , size=subject_count, replace=T)
+
   ) %>%
   dplyr::mutate(
     int_factor_1    = rnorm(n=subject_count, mean=10.0, sd=2.0),
@@ -110,7 +113,6 @@ ds <-
     int_factor_2    = round(int_factor_2  , 3),
     slope_factor_2  = round(slope_factor_2, 3),
 
-
     cog_1   = round(cog_1   , 1),
     cog_2   = round(cog_2   , 1),
     cog_3   = round(cog_3   , 1),
@@ -130,6 +132,7 @@ ds_long <-
     wave_id,
     year,
     age,
+    county_id,
     cog_1,
     cog_2,
     cog_3,
@@ -139,7 +142,7 @@ ds_long <-
   ) %>%
   tidyr::gather(
     key   = manifest,
-    value = value, -subject_id, -wave_id, -year, -age
+    value = value, -subject_id, -wave_id, -year, -age, -county_id
   )
 
 
@@ -155,11 +158,10 @@ ggplot(ds_long, aes(x=wave_id, y=value, color=subject_id)) + #, ymin=0
 last_plot() + aes(x=year)
 last_plot() + aes(x=age)
 
-ggplot(ds, aes(x=year, y=cog_1, color=subject_id)) +
+ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
   geom_line() +
   theme_minimal() +
-  theme(legend.position="none")
-
+  theme(legend.position="top")
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds)
@@ -167,6 +169,7 @@ checkmate::assert_factor(  ds$subject_id        , any.missing=F                 
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
 checkmate::assert_integer( ds$age               , any.missing=F , lower=70, upper=85     )
+checkmate::assert_integer( ds$county_id         , any.missing=F , lower=1, upper=77      )
 
 checkmate::assert_numeric( ds$int_factor_1      , any.missing=F , lower=4, upper=20      )
 checkmate::assert_numeric( ds$slope_factor_1    , any.missing=F , lower=-1, upper=1      )
@@ -178,7 +181,7 @@ checkmate::assert_numeric( ds$cog_2             , any.missing=F , lower=0, upper
 checkmate::assert_numeric( ds$cog_3             , any.missing=F , lower=0, upper=20      )
 checkmate::assert_numeric( ds$phys_1            , any.missing=F , lower=0, upper=20      )
 checkmate::assert_numeric( ds$phys_2            , any.missing=F , lower=0, upper=20      )
-checkmate::assert_numeric( ds$phys_3            , any.missing=F , lower=0, upper=20     )
+checkmate::assert_numeric( ds$phys_3            , any.missing=F , lower=0, upper=20      )
 
 subject_wave_combo   <- paste(ds$subject_id, ds$wave_id)
 checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{1,3} \\d{1,2}$"   , any.missing=F, unique=T)
@@ -187,7 +190,7 @@ checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{1,3} \\d{1,2}$" 
 # dput(colnames(ds)) # Print colnames for line below.
 columns_to_write <- c(
   "subject_id",
-  "wave_id", "year", "age",
+  "wave_id", "year", "age", "county_id",
   "int_factor_1", "slope_factor_1",
   "cog_1", "cog_2", "cog_3",
   "phys_1", "phys_2", "phys_3"

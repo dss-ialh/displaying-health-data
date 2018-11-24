@@ -25,13 +25,13 @@ requireNamespace("OuhscMunge"   ) # remotes::install_github(repo="OuhscBbmc/Ouhs
 
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
-# config                         <- config::get()
+config                         <- config::get()
 # path_out_unified               <- config$path_te_county_month
 # path_db                        <- config$path_te_database
 # Uncomment the lines above and delete the two below if values are stored in 'config.yml'.
 
 path_out_unified               <- "data-public/derived/county-month-te.csv"
-path_db                        <- "data-unshared/derived/te.sqlite3"
+path_db                        <- config$path_database
 counties_to_drop_from_rural    <- c("Central Office", "Tulsa", "Oklahoma") #Exclude these records from the rural dataset.
 default_day_of_month           <- 15L      # Summarize each month at its (rough) midpoint.
 possible_county_ids            <- 1:77     #There are 77 counties.
@@ -377,8 +377,8 @@ rm(columns_to_write)
 
 # ---- save-to-disk ------------------------------------------------------------
 # If there's no PHI, a rectangular CSV is usually adequate, and it's portable to other machines and software.
-readr::write_csv(ds, path_out_unified)
-# readr::write_rds(ds, path_out_unified, compress="gz") # Save as a compressed R-binary file if it's large or has a lot of factors.
+# readr::write_csv(ds_slim, path_out_unified)
+# readr::write_rds(ds_slim, path_out_unified, compress="gz") # Save as a compressed R-binary file if it's large or has a lot of factors.
 
 
 # ---- save-to-db --------------------------------------------------------------
@@ -387,14 +387,16 @@ readr::write_csv(ds, path_out_unified)
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
 
 sql_create_tbl_county <- "
-  CREATE TABLE `tbl_county` (
+  DROP TABLE county;
+  CREATE TABLE `county` (
   	county_id              INTEGER NOT NULL PRIMARY KEY,
     county_name            VARCHAR NOT NULL,
     region_id              INTEGER NOT NULL
   );"
 
 sql_create_tbl_te_month <- "
-  CREATE TABLE `tbl_te_month` (
+  DROP TABLE te_month;
+  CREATE TABLE `te_month` (
   	county_month_id                    INTEGER NOT NULL PRIMARY KEY,
   	county_id                          INTEGER NOT NULL,
     month                              VARCHAR NOT NULL,         -- There's no date type in SQLite.  Make sure it's ISO8601: yyyy-mm-dd
@@ -403,24 +405,24 @@ sql_create_tbl_te_month <- "
     month_missing                      INTEGER NOT NULL,         -- There's no bit/boolean type in SQLite
     fte_rolling_median_11_month        INTEGER, --  NOT NULL
 
-    FOREIGN KEY(county_id) REFERENCES tbl_county(county_id)
+    -- FOREIGN KEY(county_id) REFERENCES tbl_county(county_id)
   );"
 
 # Remove old DB
-if( file.exists(path_db) ) file.remove(path_db)
+# if( file.exists(path_db) ) file.remove(path_db)
 
 # Open connection
 cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
-RSQLite::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
-dbListTables(cnn)
+#DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
+DBI::dbListTables(cnn)
 
 # Create tables
-dbSendQuery(cnn, sql_create_tbl_county)
-dbSendQuery(cnn, sql_create_tbl_te_month)
-dbListTables(cnn)
+DBI::dbSendQuery(cnn, sql_create_tbl_county)
+DBI::dbSendQuery(cnn, sql_create_tbl_te_month)
+DBI::dbListTables(cnn)
 
 # Write to database
-dbWriteTable(cnn, name='tbl_county',              value=ds_county,        append=TRUE, row.names=FALSE)
+DBI::dbWriteTable(cnn, name='county',              value=ds_county,        append=TRUE, row.names=FALSE)
 ds %>%
   dplyr::mutate(
     month               = strftime(month, "%Y-%m-%d"),
@@ -428,62 +430,7 @@ ds %>%
     month_missing       = as.logical(month_missing)
   ) %>%
   dplyr::select(county_month_id, county_id, month, fte, fte_approximated, month_missing, fte_rolling_median_11_month) %>%
-  dbWriteTable(value=., conn=cnn, name='tbl_te_month', append=TRUE, row.names=FALSE)
+  DBI::dbWriteTable(value=., conn=cnn, name='te_month', append=TRUE, row.names=FALSE)
 
 # Close connection
-dbDisconnect(cnn)
-
-# # ---- upload-to-db ----------------------------------------------------------
-# If there's PHI, write to a central database server that authenticates users (like SQL Server).
-# (startTime <- Sys.time())
-# dbTable <- "Osdh.tblC1TEMonth"
-# channel <- RODBC::odbcConnect("te-example") #getSqlTypeInfo("Microsoft SQL Server") #;odbcGetInfo(channel)
-#
-# columnInfo <- RODBC::sqlColumns(channel, dbTable)
-# varTypes <- as.character(columnInfo$TYPE_NAME)
-# names(varTypes) <- as.character(columnInfo$COLUMN_NAME)  #varTypes
-#
-# RODBC::sqlClear(channel, dbTable)
-# RODBC::sqlSave(channel, ds_slim, dbTable, append=TRUE, rownames=FALSE, fast=TRUE, varTypes=varTypes)
-# RODBC::odbcClose(channel)
-# rm(columnInfo, channel, columns_to_write, dbTable, varTypes)
-# (elapsedDuration <-  Sys.time() - startTime) #21.4032 secs 2015-10-31
-
-
-#Possibly consider writing to sqlite (with RSQLite) if there's no PHI, or a central database if there is PHI.
-
-# ---- inspect, fig.width=10, fig.height=6, fig.path=figure_path -----------------------------------------------------------------
-# This last section is kinda cheating, and should belong in an 'analysis' file, not a 'manipulation' file.
-#   It's included here for the sake of demonstration.
-
-library(ggplot2)
-
-# Graph each county-month
-ggplot(ds, aes(x=month, y=fte, group=factor(county_id), color=factor(county_id), shape=fte_approximated, ymin=0)) +
-  geom_point(position=position_jitter(height=.05, width=5), size=4, na.rm=T) +
-  # geom_text(aes(label=county_month_id)) +
-  geom_line(position=position_jitter(height=.1, width=5)) +
-  scale_shape_manual(values=c("TRUE"=21, "FALSE"=NA)) +
-  theme_light() +
-  guides(color = guide_legend(ncol=4, override.aes = list(size=3, alpha = 1))) +
-  guides(shape = guide_legend(ncol=2, override.aes = list(size=3, alpha = 1))) +
-  labs(title="FTE sum each month (by county)", y="Sum of FTE for County")
-
-# Graph each region-month
-ds_region <-
-  ds %>%
-  dplyr::group_by(region_id, month) %>%
-  dplyr::summarize(
-    fte              = sum(fte, na.rm=T),
-    fte_approximated = any(fte_approximated)
-  ) %>%
-  dplyr::ungroup()
-
-last_plot() %+%
-  ds_region +
-  aes(group=factor(region_id), color=factor(region_id)) +
-  labs(title="FTE sum each month (by region)", y="Sum of FTE for Region")
-
-# last_plot() +
-#   aes(y=fmla_hours) +
-#   labs(title="fmla_hours sum each month (by county)")
+DBI::dbDisconnect(cnn)

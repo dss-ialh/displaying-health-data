@@ -10,6 +10,10 @@ library(magrittr)
 requireNamespace("testit")
 
 # ---- declare-globals ---------------------------------------------------------
+# Constant values that won't change.
+config                         <- config::get()
+path_db                        <- config$path_database
+
 ds_rail  <- tibble::tribble(
   ~fx             , ~path,
 
@@ -18,6 +22,7 @@ ds_rail  <- tibble::tribble(
 
   # Ellis Lanes
   "run_file_r"    , "manipulation/mlm-1-ellis.R",
+  "run_file_r"    , "manipulation/te-ellis.R",
 
 )
 
@@ -60,6 +65,9 @@ warn_level_initial <- as.integer(options("warn"))
 # options(warn=2)  # treat warnings as errors
 
 (start_time <- Sys.time())
+
+# Remove old DB
+# if( file.exists(path_db) ) file.remove(path_db)
 
 purrr::invoke_map_lgl(
   ds_rail$fx,

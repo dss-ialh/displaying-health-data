@@ -42,6 +42,7 @@ subject_count       <- 20
 wave_count          <- 10
 possible_year_start <- 2000:2005
 possible_age_start  <- 70:75
+possible_county_id  <- c(51L, 55L, 72L)
 
 cor_factor_1_vs_2   <- c(.3, .005)          # Int & slope
 loadings_factor_1   <- c(.4, .5, .6)
@@ -57,7 +58,9 @@ ds_subject <-
   tibble::tibble(
     subject_id      = factor(seq_len(subject_count)),
     year_start      = sample(possible_year_start, size=subject_count, replace=T),
-    age_start       = sample(possible_age_start , size=subject_count, replace=T)
+    age_start       = sample(possible_age_start , size=subject_count, replace=T),
+    county_id       = sample(possible_county_id , size=subject_count, replace=T)
+
   ) %>%
   dplyr::mutate(
     int_factor_1    = rnorm(n=subject_count, mean=10.0, sd=2.0),
@@ -70,30 +73,30 @@ ds_subject
 ```
 
 ```
-## # A tibble: 20 x 7
-##    subject_id year_start age_start int_factor_1 slope_factor_1 int_factor_2
-##    <fct>           <int>     <int>        <dbl>          <dbl>        <dbl>
-##  1 1                2000        73         8.27        0.0282          6.24
-##  2 2                2000        73        11.4         0.0514          7.31
-##  3 3                2004        75        12.4         0.108           9.13
-##  4 4                2001        74         6.10        0.0616          7.22
-##  5 5                2005        70         7.40        0.0810          7.54
-##  6 6                2003        75         6.85       -0.0462          6.59
-##  7 7                2005        72         7.72        0.0257          6.50
-##  8 8                2000        70        13.1        -0.00384         7.27
-##  9 9                2002        75        13.4         0.0370          9.09
-## 10 10               2004        74        10.1         0.0143          8.54
-## 11 11               2000        73         8.61        0.0611          7.15
-## 12 12               2001        73         7.80        0.0114          7.83
-## 13 13               2005        75        11.0         0.0765          7.46
-## 14 14               2003        74        15.4         0.0707         10.2 
-## 15 15               2004        73        11.7         0.0990          9.31
-## 16 16               2000        71         8.40       -0.0298          8.99
-## 17 17               2004        71         7.76        0.0196          6.99
-## 18 18               2001        75         7.45        0.0191          8.44
-## 19 19               2001        74        12.5         0.141           8.26
-## 20 20               2004        75        11.5         0.0683          8.05
-## # ... with 1 more variable: slope_factor_2 <dbl>
+## # A tibble: 20 x 8
+##    subject_id year_start age_start county_id int_factor_1 slope_factor_1
+##    <fct>           <int>     <int>     <int>        <dbl>          <dbl>
+##  1 1                2000        73        51         8.61        0.0611 
+##  2 2                2000        73        55         7.80        0.0114 
+##  3 3                2004        75        72        11.0         0.0765 
+##  4 4                2001        74        72        15.4         0.0707 
+##  5 5                2005        70        72        11.7         0.0990 
+##  6 6                2003        75        51         8.40       -0.0298 
+##  7 7                2005        72        51         7.76        0.0196 
+##  8 8                2000        70        55         7.45        0.0191 
+##  9 9                2002        75        51        12.5         0.141  
+## 10 10               2004        74        51        11.5         0.0683 
+## 11 11               2000        73        51         8.91       -0.0121 
+## 12 12               2001        73        72        10.1        -0.00494
+## 13 13               2005        75        51        12.9         0.0699 
+## 14 14               2003        74        51        10.6         0.0695 
+## 15 15               2004        73        72        11.6         0.0660 
+## 16 16               2000        71        55         5.19        0.0266 
+## 17 17               2004        71        72         8.78        0.00908
+## 18 18               2001        75        51         7.31       -0.0325 
+## 19 19               2001        74        55         9.35        0.0531 
+## 20 20               2004        75        55         8.22        0.0757 
+## # ... with 2 more variables: int_factor_2 <dbl>, slope_factor_2 <dbl>
 ```
 
 ```r
@@ -144,10 +147,10 @@ ds <-
     phys_3  = pmax(0, phys_3)
   ) %>%
   dplyr::mutate( # Don't simulate unrealistically precise manfiest variables
-    int_factor_1    = round(int_factor_1  , 4),
-    slope_factor_1  = round(slope_factor_1, 4),
-    int_factor_2    = round(int_factor_2  , 4),
-    slope_factor_2  = round(slope_factor_2, 4),
+    int_factor_1    = round(int_factor_1  , 3),
+    slope_factor_1  = round(slope_factor_1, 3),
+    int_factor_2    = round(int_factor_2  , 3),
+    slope_factor_2  = round(slope_factor_2, 3),
 
     cog_1   = round(cog_1   , 1),
     cog_2   = round(cog_2   , 1),
@@ -162,22 +165,22 @@ ds
 ```
 
 ```
-## # A tibble: 200 x 15
-##    subject_id wave_id age_start int_factor_1 slope_factor_1 int_factor_2
-##    <fct>        <int>     <int>        <dbl>          <dbl>        <dbl>
-##  1 1                1        73         8.27         0.0282         6.24
-##  2 1                2        73         8.27         0.0282         6.24
-##  3 1                3        73         8.27         0.0282         6.24
-##  4 1                4        73         8.27         0.0282         6.24
-##  5 1                5        73         8.27         0.0282         6.24
-##  6 1                6        73         8.27         0.0282         6.24
-##  7 1                7        73         8.27         0.0282         6.24
-##  8 1                8        73         8.27         0.0282         6.24
-##  9 1                9        73         8.27         0.0282         6.24
-## 10 1               10        73         8.27         0.0282         6.24
-## # ... with 190 more rows, and 9 more variables: slope_factor_2 <dbl>,
-## #   year <int>, age <int>, cog_1 <dbl>, cog_2 <dbl>, cog_3 <dbl>,
-## #   phys_1 <dbl>, phys_2 <dbl>, phys_3 <dbl>
+## # A tibble: 200 x 16
+##    subject_id wave_id age_start county_id int_factor_1 slope_factor_1
+##    <fct>        <int>     <int>     <int>        <dbl>          <dbl>
+##  1 1                1        73        51         8.61          0.061
+##  2 1                2        73        51         8.61          0.061
+##  3 1                3        73        51         8.61          0.061
+##  4 1                4        73        51         8.61          0.061
+##  5 1                5        73        51         8.61          0.061
+##  6 1                6        73        51         8.61          0.061
+##  7 1                7        73        51         8.61          0.061
+##  8 1                8        73        51         8.61          0.061
+##  9 1                9        73        51         8.61          0.061
+## 10 1               10        73        51         8.61          0.061
+## # ... with 190 more rows, and 10 more variables: int_factor_2 <dbl>,
+## #   slope_factor_2 <dbl>, year <int>, age <int>, cog_1 <dbl>, cog_2 <dbl>,
+## #   cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>, phys_3 <dbl>
 ```
 
 ```r
@@ -188,6 +191,7 @@ ds_long <-
     wave_id,
     year,
     age,
+    county_id,
     cog_1,
     cog_2,
     cog_3,
@@ -197,7 +201,7 @@ ds_long <-
   ) %>%
   tidyr::gather(
     key   = manifest,
-    value = value, -subject_id, -wave_id, -year, -age
+    value = value, -subject_id, -wave_id, -year, -age, -county_id
   )
 ```
 
@@ -226,10 +230,10 @@ last_plot() + aes(x=age)
 <img src="stitched-output/manipulation/simulation/simulate-mlm-1/inspect-3.png" title="plot of chunk inspect" alt="plot of chunk inspect" style="display: block; margin: auto;" />
 
 ```r
-ggplot(ds, aes(x=year, y=cog_1, color=subject_id)) +
+ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
   geom_line() +
   theme_minimal() +
-  theme(legend.position="none")
+  theme(legend.position="top")
 ```
 
 <img src="stitched-output/manipulation/simulation/simulate-mlm-1/inspect-4.png" title="plot of chunk inspect" alt="plot of chunk inspect" style="display: block; margin: auto;" />
@@ -240,6 +244,7 @@ checkmate::assert_factor(  ds$subject_id        , any.missing=F                 
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
 checkmate::assert_integer( ds$age               , any.missing=F , lower=70, upper=85     )
+checkmate::assert_integer( ds$county_id         , any.missing=F , lower=1, upper=77      )
 
 checkmate::assert_numeric( ds$int_factor_1      , any.missing=F , lower=4, upper=20      )
 checkmate::assert_numeric( ds$slope_factor_1    , any.missing=F , lower=-1, upper=1      )
@@ -251,7 +256,7 @@ checkmate::assert_numeric( ds$cog_2             , any.missing=F , lower=0, upper
 checkmate::assert_numeric( ds$cog_3             , any.missing=F , lower=0, upper=20      )
 checkmate::assert_numeric( ds$phys_1            , any.missing=F , lower=0, upper=20      )
 checkmate::assert_numeric( ds$phys_2            , any.missing=F , lower=0, upper=20      )
-checkmate::assert_numeric( ds$phys_3            , any.missing=F , lower=0, upper=20     )
+checkmate::assert_numeric( ds$phys_3            , any.missing=F , lower=0, upper=20      )
 
 subject_wave_combo   <- paste(ds$subject_id, ds$wave_id)
 checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{1,3} \\d{1,2}$"   , any.missing=F, unique=T)
@@ -261,7 +266,7 @@ checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{1,3} \\d{1,2}$" 
 # dput(colnames(ds)) # Print colnames for line below.
 columns_to_write <- c(
   "subject_id",
-  "wave_id", "year", "age",
+  "wave_id", "year", "age", "county_id",
   "int_factor_1", "slope_factor_1",
   "cog_1", "cog_2", "cog_3",
   "phys_1", "phys_2", "phys_3"
@@ -274,21 +279,21 @@ ds_slim
 ```
 
 ```
-## # A tibble: 200 x 12
-##    subject_id wave_id  year   age int_factor_1 slope_factor_1 cog_1 cog_2
-##    <fct>        <int> <int> <int>        <dbl>          <dbl> <dbl> <dbl>
-##  1 1                1  2000    73         8.27         0.0282   3.4   4.4
-##  2 1                2  2001    74         8.27         0.0282   3.4   4.4
-##  3 1                3  2002    75         8.27         0.0282   3.3   4.3
-##  4 1                4  2003    76         8.27         0.0282   3.3   4.7
-##  5 1                5  2004    77         8.27         0.0282   3.4   4.2
-##  6 1                6  2005    78         8.27         0.0282   3.5   4.2
-##  7 1                7  2006    79         8.27         0.0282   3.5   4.4
-##  8 1                8  2007    80         8.27         0.0282   3.6   4.4
-##  9 1                9  2008    81         8.27         0.0282   3.6   3.9
-## 10 1               10  2009    82         8.27         0.0282   3.5   4.5
-## # ... with 190 more rows, and 4 more variables: cog_3 <dbl>, phys_1 <dbl>,
-## #   phys_2 <dbl>, phys_3 <dbl>
+## # A tibble: 200 x 13
+##    subject_id wave_id  year   age county_id int_factor_1 slope_factor_1
+##    <fct>        <int> <int> <int>     <int>        <dbl>          <dbl>
+##  1 1                1  2000    73        51         8.61          0.061
+##  2 1                2  2001    74        51         8.61          0.061
+##  3 1                3  2002    75        51         8.61          0.061
+##  4 1                4  2003    76        51         8.61          0.061
+##  5 1                5  2004    77        51         8.61          0.061
+##  6 1                6  2005    78        51         8.61          0.061
+##  7 1                7  2006    79        51         8.61          0.061
+##  8 1                8  2007    80        51         8.61          0.061
+##  9 1                9  2008    81        51         8.61          0.061
+## 10 1               10  2009    82        51         8.61          0.061
+## # ... with 190 more rows, and 6 more variables: cog_1 <dbl>, cog_2 <dbl>,
+## #   cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>, phys_3 <dbl>
 ```
 
 ```r
@@ -359,6 +364,6 @@ Sys.time()
 ```
 
 ```
-## [1] "2018-11-24 13:47:31 CST"
+## [1] "2018-11-24 14:36:35 CST"
 ```
 
