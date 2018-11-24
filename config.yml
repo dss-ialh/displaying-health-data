@@ -1,3 +1,3 @@
 default:
-    path_mlm_1:         "data-public/derived/mlm-1.csv"
-    # path_te_database:         "data-unshared/derived/te.sqlite3"
+    path_mlm_1_raw:         "data-public/raw/mlm-1.csv"
+    path_database:          "data-public/derived/mlm.sqlite3"
