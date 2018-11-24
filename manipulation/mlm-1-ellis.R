@@ -28,8 +28,7 @@ requireNamespace("OuhscMunge"   ) # remotes::install_github(repo="OuhscBbmc/Ouhs
 config                         <- config::get()
 figure_path <- 'stitched-output/manipulation/ellis/mlm-1-ellis/'
 
-col_types <- readr::cols_only( # readr::spec_csv(path_in_oklahoma)
-  subject_wave_id     = readr::col_integer(),
+col_types <- readr::cols_only(
   subject_id          = readr::col_integer(),
   wave_id             = readr::col_integer(),
   year                = readr::col_integer(),
@@ -62,8 +61,7 @@ ds
 ds <-
   ds %>%
   dplyr::select_( #`select()` implicitly drops the other columns not mentioned.
-    "subject_wave_id"
-    , "subject_id"
+    "subject_id"
     , "wave_id"
     , "year"
     , "age"
@@ -77,8 +75,13 @@ ds <-
     , "phys_3"
   ) %>%
   dplyr::mutate(
-    subject_id  = factor(subject_id)
-  )
+    subject_id  = factor(subject_id),
+    age_cut_3   = cut(age, breaks=c(70, 75, 80, Inf), labels=c("70-74", "75-79", "80+"), include.lowest = T),
+    age_80_plus = (80L <= age)
+  )  %>%
+  dplyr::arrange(subject_id, wave_id) %>%
+  tibble::rowid_to_column("subject_wave_id")
+
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds)
@@ -87,6 +90,8 @@ checkmate::assert_factor(  ds$subject_id        , any.missing=F                 
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
 checkmate::assert_integer( ds$age               , any.missing=F , lower=70, upper=85     )
+checkmate::assert_factor(  ds$age_cut_3         , any.missing=F                          )
+checkmate::assert_logical( ds$age_80_plus       , any.missing=F                          )
 
 checkmate::assert_numeric( ds$cog_1             , any.missing=F , lower=0, upper=20      )
 checkmate::assert_numeric( ds$cog_2             , any.missing=F , lower=0, upper=20      )
@@ -109,16 +114,17 @@ subject_wave_combo[!grepl("^\\d{1,3} \\d{1,2}$", subject_wave_combo)]     # Idea
 # dput(colnames(ds)) # Print colnames for line below.
 columns_to_write <- c(
   "subject_wave_id", "subject_id",
-  "wave_id", "year", "age",
+  "wave_id", "year",
+  "age", "age_cut_3", "age_80_plus",
   "int_factor_1", "slope_factor_1",
   "cog_1", "cog_2", "cog_3",
   "phys_1", "phys_2", "phys_3"
 )
 ds_slim <-
   ds %>%
-  dplyr::select(!!columns_to_write) %>%
   # dplyr::slice(1:100) %>%
-  dplyr::mutate_if(is.logical, as.integer)       # Some databases & drivers need 0/1 instead of FALSE/TRUE.
+  dplyr::select(!!columns_to_write)
+
 ds_slim
 
 rm(columns_to_write)
@@ -134,13 +140,15 @@ rm(columns_to_write)
 #   * the data is relational and
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
 # cat(dput(colnames(ds)), sep = "\n")
-sql_create_tbl_mlm_1 <- "
-  CREATE TABLE `tbl_mlm_1` (
+sql_create_mlm_1 <- "
+  CREATE TABLE `mlm_1` (
     subject_wave_id         INT NOT NULL PRIMARY KEY,
     subject_id              INT NOT NULL,
     wave_id                 INT NOT NULL,
     year                    INT NOT NULL,
     age                     INT NOT NULL,
+    age_cut_3               VARCHAR(5) NOT NULL,
+    age_80_plus             BIT NOT NULL,
     int_factor_1            FLOAT NOT NULL,
     slope_factor_1          FLOAT NOT NULL,
     cog_1                   FLOAT NOT NULL,
@@ -160,11 +168,13 @@ RSQLite::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated
 DBI::dbListTables(cnn)
 
 # Create tables
-DBI::dbSendQuery(cnn, sql_create_tbl_mlm_1)
+DBI::dbSendQuery(cnn, sql_create_mlm_1)
 DBI::dbListTables(cnn)
 
 # Write to database
-DBI::dbWriteTable(cnn, name='tbl_mlm_1',              value=ds_slim,        append=TRUE, row.names=FALSE)
+ds_slim %>%
+  # dplyr::mutate_if(is.logical, as.integer) %>%        # Some databases & drivers need 0/1 instead of FALSE/TRUE.
+DBI::dbWriteTable(cnn, name='mlm_1',              value=.,        append=TRUE, row.names=FALSE)
 
 # Close connection
 DBI::dbDisconnect(cnn)

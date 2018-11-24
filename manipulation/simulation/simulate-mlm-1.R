@@ -29,7 +29,7 @@ figure_path <- 'stitched-output/manipulation/simulation/simulate-mlm-1/'
 subject_count       <- 20
 wave_count          <- 10
 possible_year_start <- 2000:2005
-possible_age_start  <- 70:76
+possible_age_start  <- 70:75
 
 cor_factor_1_vs_2   <- c(.3, .005)          # Int & slope
 loadings_factor_1   <- c(.4, .5, .6)
@@ -64,8 +64,6 @@ ds <-
     wave_id         = seq_len(wave_count)
   ) %>%
   dplyr::right_join(ds_subject, by="subject_id") %>%
-  dplyr::arrange(subject_id, wave_id) %>%
-  tibble::rowid_to_column("subject_wave_id") %>%
   dplyr::mutate(
     year            = wave_id + year_start - 1L,
     age             = wave_id + age_start  - 1L,
@@ -114,7 +112,6 @@ ds
 ds_long <-
   ds %>%
   dplyr::select(
-    subject_wave_id,
     subject_id,
     wave_id,
     year,
@@ -128,8 +125,7 @@ ds_long <-
   ) %>%
   tidyr::gather(
     key   = manifest,
-    value = value,
-    -subject_wave_id, -subject_id, -wave_id, -year, -age
+    value = value, -subject_id, -wave_id, -year, -age
   )
 
 
@@ -153,7 +149,6 @@ ggplot(ds, aes(x=year, y=cog_1, color=subject_id)) +
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds)
-checkmate::assert_integer( ds$subject_wave_id   , any.missing=F , lower=1, upper=200     , unique=T)
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
@@ -171,10 +166,13 @@ checkmate::assert_numeric( ds$phys_1            , any.missing=F , lower=0, upper
 checkmate::assert_numeric( ds$phys_2            , any.missing=F , lower=0, upper=20      )
 checkmate::assert_numeric( ds$phys_3            , any.missing=F , lower=0, upper=20     )
 
+subject_wave_combo   <- paste(ds$subject_id, ds$wave_id)
+checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{1,3} \\d{1,2}$"   , any.missing=F, unique=T)
+
 # ---- specify-columns-to-upload -----------------------------------------------
 # dput(colnames(ds)) # Print colnames for line below.
 columns_to_write <- c(
-  "subject_wave_id", "subject_id",
+  "subject_id",
   "wave_id", "year", "age",
   "int_factor_1", "slope_factor_1",
   "cog_1", "cog_2", "cog_3",

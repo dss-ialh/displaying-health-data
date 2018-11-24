@@ -1,32 +1,24 @@
-# knitr::stitch_rmd(script="./utility/reproduce.R", output="./stitched-output/utility/reproduce.md")
-rm(list=ls(all=TRUE)) #Clear the memory of variables from previous run. This is not called by knitr, because it's above the first chunk.
+# knitr::stitch_rmd(script="./manipulation/osdh/osdh-flow.R", output="./stitched-output/manipulation/osdh/osdh-flow.md")
+#This next line is run when the whole file is executed, but not when knitr calls individual chunks.
+rm(list=ls(all=TRUE)) #Clear the memory for any variables set from any previous runs.
 
 # ---- load-sources ------------------------------------------------------------
 
+
 # ---- load-packages -----------------------------------------------------------
-library("magrittr")
-requireNamespace("purrr")
-# requireNamespace("checkmate")
-requireNamespace("OuhscMunge") # remotes::install_github("OuhscBbmc/OuhscMunge")
+library(magrittr)
+requireNamespace("testit")
 
 # ---- declare-globals ---------------------------------------------------------
-# config        <- config::get(file="data-public/metadata/config.yml")
-
-# Allow multiple files below to have the same chunk name.
-#    If the `root.dir` option is properly managed in the Rmd files, no files will be overwritten.
-options(knitr.duplicate.label = "allow")
-
 ds_rail  <- tibble::tribble(
-  ~fx               , ~path,
+  ~fx             , ~path,
 
-  # First run the manipulation files to prepare the dataset(s).
-  "run_file_r"      , "./manipulation/te-ellis.R",
-  "run_file_r"      , "./manipulation/car-ellis.R",
-  # "run_ferry_sql" , "./manipulation/inserts-to-normalized-tables.sql"
-  "run_file_r"      , "./manipulation/randomization-block-simple.R",
+  # Simulate observed data
+  "run_file_r"    , "manipulation/simulation/simulate-mlm-1.R",
 
-  # Next render the analysis report(s):
-  "run_rmd"       , "analysis/report-1/report-1.Rmd"
+  # Ellis Lanes
+  "run_file_r"    , "manipulation/mlm-1-ellis.R",
+
 )
 
 run_file_r <- function( minion ) {
@@ -35,19 +27,19 @@ run_file_r <- function( minion ) {
   message("Completed `", basename(minion), "`.")
   return( TRUE )
 }
-run_ferry_sql <- function( minion ) {
-  message("\nStarting `", basename(minion), "` at ", Sys.time(), ".")
-  OuhscMunge::execute_sql_file(minion, config$dsn_staging)
-  message("Completed `", basename(minion), "`.")
-  return( TRUE )
-}
-run_rmd <- function( minion ) {
-  message("\nStarting `", basename(minion), "` at ", Sys.time(), ".")
-  path_out <- rmarkdown::render(minion, envir=new.env())
-  Sys.sleep(3) # Sleep for three secs, to let pandoc finish
-  message(path_out)
-  return( TRUE )
-}
+# run_ferry_sql <- function( minion ) {
+#   message("\nStarting `", basename(minion), "` at ", Sys.time(), ".")
+#   OuhscMunge::execute_sql_file(minion, config_value("dsn_miechv"))
+#   message("Completed `", basename(minion), "`.")
+#   return( TRUE )
+# }
+# run_rmd <- function( minion ) {
+#   message("\nStarting `", basename(minion), "` at ", Sys.time(), ".")
+#   path_out <- rmarkdown::render(minion, envir=new.env())
+#   Sys.sleep(3) # Sleep for three secs, to let pandoc finish
+#   message(path_out)
+#   return( TRUE )
+# }
 
 (file_found <- purrr::map_lgl(ds_rail$path, file.exists))
 if( !all(file_found) ) {
@@ -59,14 +51,24 @@ if( !all(file_found) ) {
 
 # ---- tweak-data --------------------------------------------------------------
 
-# ---- run ---------------------------------------------------------------------
-message("Starting update of files at ", Sys.time(), ".")
-elapsed_time <- system.time({
-  purrr::invoke_map_lgl(
-    ds_rail$fx,
-    ds_rail$path
-  )
-})
+# ---- run-sources -------------------------------------------------------------
 
-message("Completed update of files at ", Sys.time(), "")
-elapsed_time
+message("Preparing to run\n\t", paste(ds_rail$path, collapse="\n\t"))
+
+warn_level_initial <- as.integer(options("warn"))
+# options(warn=0)  # warnings are stored until the top–level function returns
+# options(warn=2)  # treat warnings as errors
+
+(start_time <- Sys.time())
+
+purrr::invoke_map_lgl(
+  ds_rail$fx,
+  ds_rail$path
+)
+
+(elapsed_duration <-  difftime(Sys.time(), start_time, units="min"))
+options(warn=warn_level_initial)  # Restore the whatever warning level you started with.
+
+message("Completed osdh-flow at ", Sys.time(), " (in ", round(elapsed_duration, 2), " mins.)")
+
+# ---- verify-values -----------------------------------------------------------
