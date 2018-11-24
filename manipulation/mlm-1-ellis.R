@@ -189,7 +189,7 @@ rm(columns_to_write)
 # cat(dput(colnames(ds)), sep = "\n")
 sql_create_tables <- "
 
-  DROP TABLE subject;
+  DROP TABLE IF EXISTS subject;
   CREATE TABLE `subject` (
     subject_id              INT NOT NULL PRIMARY KEY,
     county_id               INT NOT NULL,
@@ -200,7 +200,7 @@ sql_create_tables <- "
     age_max                 FLOAT NOT NULL
   );
 
-  DROP TABLE mlm_1;
+  DROP TABLE IF EXISTS mlm_1;
   CREATE TABLE `mlm_1` (
     subject_wave_id         INT NOT NULL PRIMARY KEY,
     subject_id              INT NOT NULL,
@@ -225,11 +225,13 @@ sql_create_tables <- "
 
 # Open connection
 cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
-DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
+result <- DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
+DBI::dbClearResult(result)
 DBI::dbListTables(cnn)
 
 # Create tables
-DBI::dbSendQuery(cnn, sql_create_tables)
+result <- DBI::dbSendQuery(cnn, sql_create_tables)
+DBI::dbClearResult(result)
 DBI::dbListTables(cnn)
 
 # Write to database
