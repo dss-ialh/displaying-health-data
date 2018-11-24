@@ -26,12 +26,16 @@ config                         <- config::get()
 set.seed(453)
 figure_path <- 'stitched-output/manipulation/simulation/simulate-mlm-1/'
 
-
 subject_count       <- 20
 wave_count          <- 10
-loadings_factor_1   <- c(.4, .5, .6)
-sigma_factor_1      <- c(.1, .2, .1)
 possible_year_start <- 2000:2005
+possible_age_start  <- 70:76
+
+cor_factor_1_vs_2   <- c(.3, .005)          # Int & slope
+loadings_factor_1   <- c(.4, .5, .6)
+loadings_factor_2   <- c(.3, .4, .1)
+sigma_factor_1      <- c(.1, .2, .1)
+sigma_factor_2      <- c(.2, .3, .5)
 
 
 # ---- load-data ---------------------------------------------------------------
@@ -43,9 +47,14 @@ ds_subject <-
   tibble::tibble(
     subject_id      = factor(seq_len(subject_count)),
     year_start      = sample(possible_year_start, size=subject_count, replace=T),
-
+    age_start       = sample(possible_age_start , size=subject_count, replace=T)
+  ) %>%
+  dplyr::mutate(
     int_factor_1    = rnorm(n=subject_count, mean=10.0, sd=2.0),
-    slope_factor_1  = rnorm(n=subject_count, mean= 0.05, sd=0.04)
+    slope_factor_1  = rnorm(n=subject_count, mean= 0.05, sd=0.04),
+
+    int_factor_2    = rnorm(n=subject_count, mean=5.0, sd=0.8) + (cor_factor_1_vs_2[1] * int_factor_1),
+    slope_factor_2  = rnorm(n=subject_count, mean= 0.03, sd=0.02) + (cor_factor_1_vs_2[2] * int_factor_1)
   )
 ds_subject
 
@@ -55,8 +64,13 @@ ds <-
     wave_id         = seq_len(wave_count)
   ) %>%
   dplyr::right_join(ds_subject, by="subject_id") %>%
+  dplyr::arrange(subject_id, wave_id) %>%
+  tibble::rowid_to_column("subject_wave_id") %>%
   dplyr::mutate(
     year            = wave_id + year_start - 1L,
+    age             = wave_id + age_start  - 1L,
+  ) %>%
+  dplyr::mutate( # Generate cognitive manifest variables (ie, from factor 1)
     cog_1           =
       (int_factor_1 * loadings_factor_1[1]) +
       slope_factor_1 * wave_id +
@@ -70,47 +84,101 @@ ds <-
       slope_factor_1 * wave_id +
       rnorm(n=n(), mean=0, sd=sigma_factor_1[3])
   ) %>%
+  dplyr::mutate( # Generate physical manifest variables (ie, from factor 2)
+    phys_1           =
+      (int_factor_2 * loadings_factor_2[1]) +
+      slope_factor_2 * wave_id +
+      rnorm(n=n(), mean=0, sd=sigma_factor_2[1]),
+    phys_2           =
+      (int_factor_2 * loadings_factor_2[2]) +
+      slope_factor_2 * wave_id +
+      rnorm(n=n(), mean=0, sd=sigma_factor_2[2]),
+    phys_3           =
+      (int_factor_2 * loadings_factor_2[3]) +
+      slope_factor_2 * wave_id +
+      rnorm(n=n(), mean=0, sd=sigma_factor_2[3])
+  ) %>%
+  dplyr::mutate( # Keep tha manifest variables positive (which will throw off the correlations)
+    cog_1   = pmax(0, cog_1),
+    cog_2   = pmax(0, cog_2),
+    cog_3   = pmax(0, cog_3),
+    phys_1  = pmax(0, phys_1),
+    phys_2  = pmax(0, phys_2),
+    phys_3  = pmax(0, phys_3)
+  ) %>%
   dplyr::select(-year_start)
 
 ds
-
 
 # ---- elongate --------------------------------------------------------------------
 ds_long <-
   ds %>%
   dplyr::select(
+    subject_wave_id,
     subject_id,
     wave_id,
     year,
+    age,
     cog_1,
     cog_2,
-    cog_3
+    cog_3,
+    phys_1,
+    phys_2,
+    phys_3
   ) %>%
-  tidyr::gather(key=manifest, value=value, -subject_id, -wave_id, -year)
+  tidyr::gather(
+    key   = manifest,
+    value = value,
+    -subject_wave_id, -subject_id, -wave_id, -year, -age
+  )
 
 
 # ---- inspect, fig.width=10, fig.height=6, fig.path=figure_path -----------------------------------------------------------------
 library(ggplot2)
 
-ggplot(ds_long, aes(x=year, y=value, color=subject_id)) +
+ggplot(ds_long, aes(x=wave_id, y=value, color=subject_id)) + #, ymin=0
   geom_line() +
-  facet_wrap("manifest", ncol=3) +
+  facet_wrap("manifest", ncol=3, scales="free_y") +
   theme_minimal() +
   theme(legend.position="none")
 
+last_plot() + aes(x=year)
+last_plot() + aes(x=age)
 
 ggplot(ds, aes(x=year, y=cog_1, color=subject_id)) +
   geom_line() +
   theme_minimal() +
   theme(legend.position="none")
 
+
+# ---- verify-values -----------------------------------------------------------
+# OuhscMunge::verify_value_headstart(ds)
+checkmate::assert_integer( ds$subject_wave_id   , any.missing=F , lower=1, upper=200     , unique=T)
+checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
+checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
+checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
+checkmate::assert_integer( ds$age               , any.missing=F , lower=70, upper=85     )
+
+checkmate::assert_numeric( ds$int_factor_1      , any.missing=F , lower=4, upper=20      )
+checkmate::assert_numeric( ds$slope_factor_1    , any.missing=F , lower=-1, upper=1      )
+checkmate::assert_numeric( ds$int_factor_2      , any.missing=F , lower=6, upper=20      )
+checkmate::assert_numeric( ds$slope_factor_2    , any.missing=F , lower=0, upper=1       )
+
+checkmate::assert_numeric( ds$cog_1             , any.missing=F , lower=0, upper=20      )
+checkmate::assert_numeric( ds$cog_2             , any.missing=F , lower=0, upper=20      )
+checkmate::assert_numeric( ds$cog_3             , any.missing=F , lower=0, upper=20      )
+checkmate::assert_numeric( ds$phys_1            , any.missing=F , lower=0, upper=20      )
+checkmate::assert_numeric( ds$phys_2            , any.missing=F , lower=0, upper=20      )
+checkmate::assert_numeric( ds$phys_3            , any.missing=F , lower=0, upper=20     )
+
 # ---- specify-columns-to-upload -----------------------------------------------
 # dput(colnames(ds)) # Print colnames for line below.
 columns_to_write <- c(
-  "subject_id", "wave_id",
-  "year",
+  "subject_wave_id", "subject_id",
+  "wave_id", "year", "age",
   "int_factor_1", "slope_factor_1",
-  "cog_1", "cog_2", "cog_3"
+  "cog_1", "cog_2", "cog_3",
+  "phys_1", "phys_2", "phys_3"
 )
 ds_slim <-
   ds %>%
@@ -124,4 +192,3 @@ rm(columns_to_write)
 # If there's no PHI, a rectangular CSV is usually adequate, and it's portable to other machines and software.
 readr::write_csv(ds_slim, config$path_mlm_1)
 # readr::write_rds(ds_slim, path_out_unified, compress="gz") # Save as a compressed R-binary file if it's large or has a lot of factors.
-
