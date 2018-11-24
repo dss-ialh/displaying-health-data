@@ -104,6 +104,20 @@ ds <-
     phys_2  = pmax(0, phys_2),
     phys_3  = pmax(0, phys_3)
   ) %>%
+  dplyr::mutate( # Don't simulate unrealistically precise manfiest variables
+    int_factor_1    = round(int_factor_1  , 3),
+    slope_factor_1  = round(slope_factor_1, 3),
+    int_factor_2    = round(int_factor_2  , 3),
+    slope_factor_2  = round(slope_factor_2, 3),
+
+
+    cog_1   = round(cog_1   , 1),
+    cog_2   = round(cog_2   , 1),
+    cog_3   = round(cog_3   , 1),
+    phys_1  = round(phys_1  , 1),
+    phys_2  = round(phys_2  , 1),
+    phys_3  = round(phys_3  , 1)
+  ) %>%
   dplyr::select(-year_start)
 
 ds
