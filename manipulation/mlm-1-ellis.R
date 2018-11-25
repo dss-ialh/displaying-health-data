@@ -33,7 +33,7 @@ figure_path <- 'stitched-output/manipulation/ellis/mlm-1-ellis/'
 col_types <- readr::cols_only(
   subject_id          = readr::col_integer(),
   wave_id             = readr::col_integer(),
-  year                = readr::col_integer(),
+  # year                = readr::col_integer(),
   age                 = readr::col_integer(),
   date_at_visit       = readr::col_date(),
   county_id           = readr::col_integer(),
@@ -67,7 +67,7 @@ ds <-
   dplyr::select_( #`select()` implicitly drops the other columns not mentioned.
     "subject_id"
     , "wave_id"
-    , "year"
+    # , "year"
     , "date_at_visit"
     , "age"
     , "county_id"
@@ -82,6 +82,7 @@ ds <-
   ) %>%
   dplyr::mutate(
     subject_id  = factor(subject_id),
+    year        = as.integer(lubridate::year(date_at_visit)),
     age_cut_4   = cut(age, breaks=c(50, 60, 70, 80, Inf), labels=c("50s", "60s", "70s", "80+"), include.lowest = T),
     age_80_plus = (80L <= age)
   )  %>%

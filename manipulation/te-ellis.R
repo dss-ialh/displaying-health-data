@@ -196,7 +196,7 @@ ds_month_tulsa
 
 # ---- groom-rural -------------------------------------------------------------
 # Groom the nurse-month dataset for the 75 rural counties.
-OuhscMunge::column_rename_headstart(ds_nurse_month_rural)
+# OuhscMunge::column_rename_headstart(ds_nurse_month_rural)
 ds_nurse_month_rural <-
   ds_nurse_month_rural %>%
   dplyr::select_(

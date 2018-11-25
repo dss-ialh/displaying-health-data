@@ -233,7 +233,10 @@ ds_slim <-
   dplyr::select(
     !!c(
       "subject_id",
-      "wave_id", "year", "date_at_visit", "age", "county_id",
+      "wave_id",
+      # "year",
+      "date_at_visit",
+      "age", "county_id",
       "int_factor_1", "slope_factor_1",
       "cog_1", "cog_2", "cog_3",
       "phys_1", "phys_2", "phys_3"
