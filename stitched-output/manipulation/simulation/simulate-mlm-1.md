@@ -40,10 +40,26 @@ figure_path <- 'stitched-output/manipulation/simulation/simulate-mlm-1/'
 
 subject_count       <- 20
 wave_count          <- 10
+
 possible_year_start <- 2000:2005
 possible_age_start  <- 70:75
 possible_county_id  <- c(51L, 55L, 72L)
 possible_county_index  <- seq_along(possible_county_id)
+possible_gender_id     <- c(1L, 2L, 255L)
+possible_race          <- c(
+  "American Indian/Alaska Native",
+  "Asian",
+  "Native Hawaiian or Other Pacific Islander",
+  "Black or African American",
+  "White",
+  "More than One Race",
+  "Unknown or Not Reported"
+)
+possible_ethnicity <- c(
+  "Not Hispanic or Latino",
+  "Hispanic or Latino",
+  "Unknown/Not Reported Ethnicity"
+)
 
 int_county          <- c(2, 2.1, 4)
 slope_county        <- c(-.04, -.06, -.2)
@@ -64,7 +80,11 @@ ds_subject <-
     year_start      = sample(possible_year_start, size=subject_count, replace=T),
     age_start       = sample(possible_age_start , size=subject_count, replace=T),
     county_index    = sample(possible_county_index , size=subject_count, replace=T),
-    county_id       = possible_county_id[county_index]
+    county_id       = possible_county_id[county_index],
+
+    gender_id       = sample(possible_gender_id , size=subject_count, replace=T, prob=c(.4, .5, .1)),
+    race            = sample(possible_race      , size=subject_count, replace=T),
+    ethnicity       = sample(possible_ethnicity , size=subject_count, replace=T)
 
   ) %>%
   dplyr::mutate(
@@ -78,31 +98,31 @@ ds_subject
 ```
 
 ```
-## # A tibble: 20 x 9
-##    subject_id year_start age_start county_index county_id int_factor_1
-##    <fct>           <int>     <int>        <int>     <int>        <dbl>
-##  1 1001             2000        73            1        51        10.6 
-##  2 1002             2000        73            2        55         9.90
-##  3 1003             2004        75            3        72        15.0 
-##  4 1004             2001        74            3        72        19.4 
-##  5 1005             2005        70            3        72        15.7 
-##  6 1006             2003        75            1        51        10.4 
-##  7 1007             2005        72            1        51         9.76
-##  8 1008             2000        70            2        55         9.55
-##  9 1009             2002        75            1        51        14.5 
-## 10 1010             2004        74            1        51        13.5 
-## 11 1011             2000        73            1        51        10.9 
-## 12 1012             2001        73            3        72        14.1 
-## 13 1013             2005        75            1        51        14.9 
-## 14 1014             2003        74            1        51        12.6 
-## 15 1015             2004        73            3        72        15.6 
-## 16 1016             2000        71            2        55         7.29
-## 17 1017             2004        71            3        72        12.8 
-## 18 1018             2001        75            1        51         9.31
-## 19 1019             2001        74            2        55        11.4 
-## 20 1020             2004        75            2        55        10.3 
-## # ... with 3 more variables: slope_factor_1 <dbl>, int_factor_2 <dbl>,
-## #   slope_factor_2 <dbl>
+## # A tibble: 20 x 12
+##    subject_id year_start age_start county_index county_id gender_id race 
+##    <fct>           <int>     <int>        <int>     <int>     <int> <chr>
+##  1 1001             2000        73            1        51         2 Nati…
+##  2 1002             2000        73            2        55         2 Unkn…
+##  3 1003             2004        75            3        72         2 Blac…
+##  4 1004             2001        74            3        72       255 Amer…
+##  5 1005             2005        70            3        72         1 Unkn…
+##  6 1006             2003        75            1        51         1 Amer…
+##  7 1007             2005        72            1        51       255 White
+##  8 1008             2000        70            2        55       255 Unkn…
+##  9 1009             2002        75            1        51         1 More…
+## 10 1010             2004        74            1        51         1 Amer…
+## 11 1011             2000        73            1        51         2 Amer…
+## 12 1012             2001        73            3        72       255 More…
+## 13 1013             2005        75            1        51         2 Asian
+## 14 1014             2003        74            1        51         1 Unkn…
+## 15 1015             2004        73            3        72         2 Amer…
+## 16 1016             2000        71            2        55         2 Asian
+## 17 1017             2004        71            3        72         1 Nati…
+## 18 1018             2001        75            1        51         1 White
+## 19 1019             2001        74            2        55         1 Asian
+## 20 1020             2004        75            2        55         2 More…
+## # ... with 5 more variables: ethnicity <chr>, int_factor_1 <dbl>,
+## #   slope_factor_1 <dbl>, int_factor_2 <dbl>, slope_factor_2 <dbl>
 ```
 
 ```r
@@ -171,23 +191,23 @@ ds
 ```
 
 ```
-## # A tibble: 200 x 17
-##    subject_id wave_id age_start county_index county_id int_factor_1
-##    <fct>        <int>     <int>        <int>     <int>        <dbl>
-##  1 1001             1        73            1        51         10.6
-##  2 1001             2        73            1        51         10.6
-##  3 1001             3        73            1        51         10.6
-##  4 1001             4        73            1        51         10.6
-##  5 1001             5        73            1        51         10.6
-##  6 1001             6        73            1        51         10.6
-##  7 1001             7        73            1        51         10.6
-##  8 1001             8        73            1        51         10.6
-##  9 1001             9        73            1        51         10.6
-## 10 1001            10        73            1        51         10.6
-## # ... with 190 more rows, and 11 more variables: slope_factor_1 <dbl>,
-## #   int_factor_2 <dbl>, slope_factor_2 <dbl>, year <int>, age <int>,
-## #   cog_1 <dbl>, cog_2 <dbl>, cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>,
-## #   phys_3 <dbl>
+## # A tibble: 200 x 20
+##    subject_id wave_id age_start county_index county_id gender_id race 
+##    <fct>        <int>     <int>        <int>     <int>     <int> <chr>
+##  1 1001             1        73            1        51         2 Nati…
+##  2 1001             2        73            1        51         2 Nati…
+##  3 1001             3        73            1        51         2 Nati…
+##  4 1001             4        73            1        51         2 Nati…
+##  5 1001             5        73            1        51         2 Nati…
+##  6 1001             6        73            1        51         2 Nati…
+##  7 1001             7        73            1        51         2 Nati…
+##  8 1001             8        73            1        51         2 Nati…
+##  9 1001             9        73            1        51         2 Nati…
+## 10 1001            10        73            1        51         2 Nati…
+## # ... with 190 more rows, and 13 more variables: ethnicity <chr>,
+## #   int_factor_1 <dbl>, slope_factor_1 <dbl>, int_factor_2 <dbl>,
+## #   slope_factor_2 <dbl>, year <int>, age <int>, cog_1 <dbl>, cog_2 <dbl>,
+## #   cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>, phys_3 <dbl>
 ```
 
 ```r
@@ -247,9 +267,11 @@ ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
 
 ```r
 # OuhscMunge::verify_value_headstart(ds_subject)
-# checkmate::assert_factor(  ds_subject$subject_id     , any.missing=F                          , unique=T)
-# checkmate::assert_integer( ds_subject$county_id      , any.missing=F , lower=51, upper=72     )
-
+checkmate::assert_factor(   ds_subject$subject_id     , any.missing=F                          , unique=T)
+# checkmate::assert_integer(  ds_subject$county_id      , any.missing=F , lower=51, upper=72     )
+checkmate::assert_integer(  ds_subject$gender_id      , any.missing=F , lower=1, upper=255     )
+checkmate::assert_character(ds_subject$race           , any.missing=F , pattern="^.{5,41}$"    )
+checkmate::assert_character(ds_subject$ethnicity      , any.missing=F , pattern="^.{18,30}$"   )
 
 # OuhscMunge::verify_value_headstart(ds)
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
@@ -276,17 +298,19 @@ checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{4} \\d{1,2}$"   
 
 ```r
 # dput(colnames(ds)) # Print colnames for line below.
-columns_to_write <- c(
-  "subject_id",
-  "wave_id", "year", "age", "county_id",
-  "int_factor_1", "slope_factor_1",
-  "cog_1", "cog_2", "cog_3",
-  "phys_1", "phys_2", "phys_3"
-)
+
 ds_slim <-
   ds %>%
   # dplyr::slice(1:100) %>%
-  dplyr::select(!!columns_to_write)
+  dplyr::select(
+    !!c(
+      "subject_id",
+      "wave_id", "year", "age", "county_id",
+      "int_factor_1", "slope_factor_1",
+      "cog_1", "cog_2", "cog_3",
+      "phys_1", "phys_2", "phys_3"
+    )
+  )
 ds_slim
 ```
 
@@ -294,27 +318,57 @@ ds_slim
 ## # A tibble: 200 x 13
 ##    subject_id wave_id  year   age county_id int_factor_1 slope_factor_1
 ##    <fct>        <int> <int> <int>     <int>        <dbl>          <dbl>
-##  1 1001             1  2000    73        51         10.6          0.021
-##  2 1001             2  2001    74        51         10.6          0.021
-##  3 1001             3  2002    75        51         10.6          0.021
-##  4 1001             4  2003    76        51         10.6          0.021
-##  5 1001             5  2004    77        51         10.6          0.021
-##  6 1001             6  2005    78        51         10.6          0.021
-##  7 1001             7  2006    79        51         10.6          0.021
-##  8 1001             8  2007    80        51         10.6          0.021
-##  9 1001             9  2008    81        51         10.6          0.021
-## 10 1001            10  2009    82        51         10.6          0.021
+##  1 1001             1  2000    73        51         8.90         -0.029
+##  2 1001             2  2001    74        51         8.90         -0.029
+##  3 1001             3  2002    75        51         8.90         -0.029
+##  4 1001             4  2003    76        51         8.90         -0.029
+##  5 1001             5  2004    77        51         8.90         -0.029
+##  6 1001             6  2005    78        51         8.90         -0.029
+##  7 1001             7  2006    79        51         8.90         -0.029
+##  8 1001             8  2007    80        51         8.90         -0.029
+##  9 1001             9  2008    81        51         8.90         -0.029
+## 10 1001            10  2009    82        51         8.90         -0.029
 ## # ... with 190 more rows, and 6 more variables: cog_1 <dbl>, cog_2 <dbl>,
 ## #   cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>, phys_3 <dbl>
 ```
 
 ```r
-rm(columns_to_write)
+ds_slim_subject <-
+  ds %>%
+  # dplyr::slice(1:100) %>%
+  dplyr::select(
+    !!c(
+      "subject_id",
+      # "county_id", # Intentionally excluding this from the outptu, to mimic what the ellis has to do sometimes.
+      "gender_id",
+      "race",
+      "ethnicity"
+    )
+  )
+ds_slim
+```
+
+```
+## # A tibble: 200 x 13
+##    subject_id wave_id  year   age county_id int_factor_1 slope_factor_1
+##    <fct>        <int> <int> <int>     <int>        <dbl>          <dbl>
+##  1 1001             1  2000    73        51         8.90         -0.029
+##  2 1001             2  2001    74        51         8.90         -0.029
+##  3 1001             3  2002    75        51         8.90         -0.029
+##  4 1001             4  2003    76        51         8.90         -0.029
+##  5 1001             5  2004    77        51         8.90         -0.029
+##  6 1001             6  2005    78        51         8.90         -0.029
+##  7 1001             7  2006    79        51         8.90         -0.029
+##  8 1001             8  2007    80        51         8.90         -0.029
+##  9 1001             9  2008    81        51         8.90         -0.029
+## 10 1001            10  2009    82        51         8.90         -0.029
+## # ... with 190 more rows, and 6 more variables: cog_1 <dbl>, cog_2 <dbl>,
+## #   cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>, phys_3 <dbl>
 ```
 
 ```r
 # If there's no PHI, a rectangular CSV is usually adequate, and it's portable to other machines and software.
-readr::write_csv(ds_slim, config$path_mlm_1)
+readr::write_csv(ds_slim, config$path_mlm_1_raw)
 # readr::write_rds(ds_slim, path_out_unified, compress="gz") # Save as a compressed R-binary file if it's large or has a lot of factors.
 ```
 
@@ -347,28 +401,30 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggplot2_3.1.0  bindrcpp_0.2.2 magrittr_1.5  
+## [1] ggplot2_3.1.0                   magrittr_1.5                   
+## [3] bindrcpp_0.2.2                  displayinghealthdata_0.0.1.9001
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] zoo_1.8-4             tidyselect_0.2.5      purrr_0.2.5          
-##  [4] lattice_0.20-38       colorspace_1.3-2      htmltools_0.3.6      
-##  [7] yaml_2.2.0            utf8_1.1.4            blob_1.1.1           
-## [10] rlang_0.3.0.1         pillar_1.3.0          glue_1.3.0           
-## [13] withr_2.1.2           DBI_1.0.0             bit64_0.9-7          
-## [16] bindr_0.1.1           plyr_1.8.4            stringr_1.3.1        
-## [19] munsell_0.5.0         gtable_0.2.0          memoise_1.1.0        
-## [22] evaluate_0.12         labeling_0.3          knitr_1.20           
-## [25] OuhscMunge_0.1.9.9009 markdown_0.8          fansi_0.4.0          
+##  [1] tidyselect_0.2.5      purrr_0.2.5           colorspace_1.3-2     
+##  [4] htmltools_0.3.6       viridisLite_0.3.0     yaml_2.2.0           
+##  [7] utf8_1.1.4            blob_1.1.1            rlang_0.3.0.1        
+## [10] pillar_1.3.0          withr_2.1.2           glue_1.3.0           
+## [13] DBI_1.0.0             bit64_0.9-7           plyr_1.8.4           
+## [16] bindr_0.1.1           stringr_1.3.1         munsell_0.5.0        
+## [19] gtable_0.2.0          rvest_0.3.2           kableExtra_0.9.0     
+## [22] evaluate_0.12         memoise_1.1.0         labeling_0.3         
+## [25] knitr_1.20            OuhscMunge_0.1.9.9009 fansi_0.4.0          
 ## [28] highr_0.7             Rcpp_1.0.0            readr_1.2.1          
-## [31] backports_1.1.2       scales_1.0.0          checkmate_1.8.9-9000 
+## [31] scales_1.0.0          backports_1.1.2       checkmate_1.8.9-9000 
 ## [34] config_0.3            bit_1.1-14            testit_0.8.1         
 ## [37] hms_0.4.2.9001        packrat_0.5.0         digest_0.6.18        
-## [40] stringi_1.2.4         dplyr_0.7.8           grid_3.5.1           
-## [43] rprojroot_1.3-2       cli_1.0.1             tools_3.5.1          
-## [46] miechv3_0.1.0.9001    lazyeval_0.2.1        tibble_1.4.2         
+## [40] stringi_1.2.4         codified_0.2.0        dplyr_0.7.8          
+## [43] rprojroot_1.3-2       grid_3.5.1            cli_1.0.1            
+## [46] tools_3.5.1           lazyeval_0.2.1        tibble_1.4.2         
 ## [49] RSQLite_2.1.1         crayon_1.3.4          tidyr_0.8.2          
-## [52] pkgconfig_2.0.2       assertthat_0.2.0      rmarkdown_1.10       
-## [55] rstudioapi_0.8        R6_2.3.0              compiler_3.5.1
+## [52] pkgconfig_2.0.2       xml2_1.2.0            assertthat_0.2.0     
+## [55] rmarkdown_1.10        httr_1.3.1            rstudioapi_0.8       
+## [58] R6_2.3.0              compiler_3.5.1
 ```
 
 ```r
@@ -376,6 +432,6 @@ Sys.time()
 ```
 
 ```
-## [1] "2018-11-24 15:10:27 CST"
+## [1] "2018-11-25 09:56:50 PST"
 ```
 

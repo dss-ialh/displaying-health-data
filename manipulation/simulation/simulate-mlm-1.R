@@ -28,10 +28,26 @@ figure_path <- 'stitched-output/manipulation/simulation/simulate-mlm-1/'
 
 subject_count       <- 20
 wave_count          <- 10
+
 possible_year_start <- 2000:2005
 possible_age_start  <- 70:75
 possible_county_id  <- c(51L, 55L, 72L)
 possible_county_index  <- seq_along(possible_county_id)
+possible_gender_id     <- c(1L, 2L, 255L)
+possible_race          <- c(
+  "American Indian/Alaska Native",
+  "Asian",
+  "Native Hawaiian or Other Pacific Islander",
+  "Black or African American",
+  "White",
+  "More than One Race",
+  "Unknown or Not Reported"
+)
+possible_ethnicity <- c(
+  "Not Hispanic or Latino",
+  "Hispanic or Latino",
+  "Unknown/Not Reported Ethnicity"
+)
 
 int_county          <- c(2, 2.1, 4)
 slope_county        <- c(-.04, -.06, -.2)
@@ -54,7 +70,11 @@ ds_subject <-
     year_start      = sample(possible_year_start, size=subject_count, replace=T),
     age_start       = sample(possible_age_start , size=subject_count, replace=T),
     county_index    = sample(possible_county_index , size=subject_count, replace=T),
-    county_id       = possible_county_id[county_index]
+    county_id       = possible_county_id[county_index],
+
+    gender_id       = sample(possible_gender_id , size=subject_count, replace=T, prob=c(.4, .5, .1)),
+    race            = sample(possible_race      , size=subject_count, replace=T),
+    ethnicity       = sample(possible_ethnicity , size=subject_count, replace=T)
 
   ) %>%
   dplyr::mutate(
@@ -170,9 +190,11 @@ ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_subject)
-# checkmate::assert_factor(  ds_subject$subject_id     , any.missing=F                          , unique=T)
-# checkmate::assert_integer( ds_subject$county_id      , any.missing=F , lower=51, upper=72     )
-
+checkmate::assert_factor(   ds_subject$subject_id     , any.missing=F                          , unique=T)
+# checkmate::assert_integer(  ds_subject$county_id      , any.missing=F , lower=51, upper=72     )
+checkmate::assert_integer(  ds_subject$gender_id      , any.missing=F , lower=1, upper=255     )
+checkmate::assert_character(ds_subject$race           , any.missing=F , pattern="^.{5,41}$"    )
+checkmate::assert_character(ds_subject$ethnicity      , any.missing=F , pattern="^.{18,30}$"   )
 
 # OuhscMunge::verify_value_headstart(ds)
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
@@ -198,20 +220,35 @@ checkmate::assert_character(subject_wave_combo, pattern  ="^\\d{4} \\d{1,2}$"   
 
 # ---- specify-columns-to-upload -----------------------------------------------
 # dput(colnames(ds)) # Print colnames for line below.
-columns_to_write <- c(
-  "subject_id",
-  "wave_id", "year", "age", "county_id",
-  "int_factor_1", "slope_factor_1",
-  "cog_1", "cog_2", "cog_3",
-  "phys_1", "phys_2", "phys_3"
-)
+
 ds_slim <-
   ds %>%
   # dplyr::slice(1:100) %>%
-  dplyr::select(!!columns_to_write)
+  dplyr::select(
+    !!c(
+      "subject_id",
+      "wave_id", "year", "age", "county_id",
+      "int_factor_1", "slope_factor_1",
+      "cog_1", "cog_2", "cog_3",
+      "phys_1", "phys_2", "phys_3"
+    )
+  )
 ds_slim
 
-rm(columns_to_write)
+ds_slim_subject <-
+  ds %>%
+  # dplyr::slice(1:100) %>%
+  dplyr::select(
+    !!c(
+      "subject_id",
+      # "county_id", # Intentionally excluding this from the outptu, to mimic what the ellis has to do sometimes.
+      "gender_id",
+      "race",
+      "ethnicity"
+    )
+  )
+ds_slim
+
 
 # ---- save-to-disk ------------------------------------------------------------
 # If there's no PHI, a rectangular CSV is usually adequate, and it's portable to other machines and software.
