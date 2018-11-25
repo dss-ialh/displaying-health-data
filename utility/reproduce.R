@@ -22,7 +22,15 @@ ds_rail  <- tibble::tribble(
 
   # Ellis Lanes
   "run_file_r"    , "manipulation/mlm-1-ellis.R",
+  "run_file_r"    , "manipulation/subject-1-ellis.R",
   "run_file_r"    , "manipulation/te-ellis.R",
+
+  # Scribes
+  "run_file_r"    , "manipulation/mlm-1-scribe.R"
+
+  # Reports
+
+  # Dashboards
 
 )
 

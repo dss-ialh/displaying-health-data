@@ -377,7 +377,7 @@ rm(columns_to_write)
 
 # ---- save-to-disk ------------------------------------------------------------
 # If there's no PHI, a rectangular CSV is usually adequate, and it's portable to other machines and software.
-# readr::write_csv(ds_slim, path_out_unified)
+readr::write_csv(ds_slim, path_out_unified)
 # readr::write_rds(ds_slim, path_out_unified, compress="gz") # Save as a compressed R-binary file if it's large or has a lot of factors.
 
 
@@ -386,39 +386,46 @@ rm(columns_to_write)
 #   * the data is relational and
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
 
-sql_create_tbl_county <- "
-  DROP TABLE county;
-  CREATE TABLE `county` (
-  	county_id              INTEGER NOT NULL PRIMARY KEY,
-    county_name            VARCHAR NOT NULL,
-    region_id              INTEGER NOT NULL
-  );"
+sql_create <- c(
+  "
+    DROP TABLE IF EXISTS county;
+  ",
+  "
+    CREATE TABLE `county` (
+    	county_id              INTEGER NOT NULL PRIMARY KEY,
+      county_name            VARCHAR NOT NULL,
+      region_id              INTEGER NOT NULL
+    );
+  ",
+  "
+    DROP TABLE IF EXISTS te_month;
+  ",
+  "
+    CREATE TABLE `te_month` (
+    	county_month_id                    INTEGER NOT NULL PRIMARY KEY,
+    	county_id                          INTEGER NOT NULL,
+      month                              VARCHAR NOT NULL,         -- There's no date type in SQLite.  Make sure it's ISO8601: yyyy-mm-dd
+      fte                                REAL    NOT NULL,
+      fte_approximated                   REAL    NOT NULL,
+      month_missing                      INTEGER NOT NULL,         -- There's no bit/boolean type in SQLite
+      fte_rolling_median_11_month        INTEGER --, --  NOT NULL
 
-sql_create_tbl_te_month <- "
-  DROP TABLE te_month;
-  CREATE TABLE `te_month` (
-  	county_month_id                    INTEGER NOT NULL PRIMARY KEY,
-  	county_id                          INTEGER NOT NULL,
-    month                              VARCHAR NOT NULL,         -- There's no date type in SQLite.  Make sure it's ISO8601: yyyy-mm-dd
-    fte                                REAL    NOT NULL,
-    fte_approximated                   REAL    NOT NULL,
-    month_missing                      INTEGER NOT NULL,         -- There's no bit/boolean type in SQLite
-    fte_rolling_median_11_month        INTEGER, --  NOT NULL
-
-    -- FOREIGN KEY(county_id) REFERENCES tbl_county(county_id)
-  );"
-
+      -- FOREIGN KEY(county_id) REFERENCES county(county_id)
+    );
+  "
+)
 # Remove old DB
 # if( file.exists(path_db) ) file.remove(path_db)
 
 # Open connection
 cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
-#DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
+# result <- DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
+# DBI::dbClearResult(result)
 DBI::dbListTables(cnn)
 
 # Create tables
-DBI::dbSendQuery(cnn, sql_create_tbl_county)
-DBI::dbSendQuery(cnn, sql_create_tbl_te_month)
+sql_create %>%
+  purrr::walk(~DBI::dbExecute(cnn, .))
 DBI::dbListTables(cnn)
 
 # Write to database
