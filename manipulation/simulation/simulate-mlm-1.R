@@ -48,6 +48,7 @@ possible_ethnicity <- c(
   "Hispanic or Latino",
   "Unknown/Not Reported Ethnicity"
 )
+possible_date_offset    <- 30:120   # Add between 30 & 120 days to Jan 1, to get the exact visit date.
 
 int_county          <- c(2, 2.1, 4)
 slope_county        <- c(-.04, -.06, -.2)
@@ -95,6 +96,8 @@ ds <-
   dplyr::mutate(
     year            = wave_id + year_start - 1L,
     age             = wave_id + age_start  - 1L,
+
+    date_at_visit   = as.Date(ISOdate(year, 1, 1) + lubridate::days(sample(possible_date_offset, size=n(), replace=T)))
   ) %>%
   dplyr::mutate( # Generate cognitive manifest variables (ie, from factor 1)
     cog_1           =
@@ -156,6 +159,7 @@ ds_long <-
     subject_id,
     wave_id,
     year,
+    date_at_visit,
     age,
     county_id,
     cog_1,
@@ -167,7 +171,7 @@ ds_long <-
   ) %>%
   tidyr::gather(
     key   = manifest,
-    value = value, -subject_id, -wave_id, -year, -age, -county_id
+    value = value, -subject_id, -wave_id, -year, -age, -county_id, -date_at_visit
   )
 
 
@@ -181,6 +185,7 @@ ggplot(ds_long, aes(x=wave_id, y=value, color=subject_id)) + #, ymin=0
   theme(legend.position="none")
 
 last_plot() + aes(x=year)
+last_plot() + aes(x=date_at_visit)
 last_plot() + aes(x=age)
 
 ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
@@ -200,6 +205,7 @@ checkmate::assert_character(ds_subject$ethnicity      , any.missing=F , pattern=
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
+checkmate::assert_date(    ds$date_at_visit     , any.missing=F , lower=as.Date("2000-01-01"), upper=as.Date("2018-12-31") )
 checkmate::assert_integer( ds$age               , any.missing=F , lower=55, upper=85     )
 checkmate::assert_integer( ds$county_id         , any.missing=F , lower=1, upper=77      )
 
@@ -227,7 +233,7 @@ ds_slim <-
   dplyr::select(
     !!c(
       "subject_id",
-      "wave_id", "year", "age", "county_id",
+      "wave_id", "year", "date_at_visit", "age", "county_id",
       "int_factor_1", "slope_factor_1",
       "cog_1", "cog_2", "cog_3",
       "phys_1", "phys_2", "phys_3"
