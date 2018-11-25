@@ -4,7 +4,15 @@ Colloquium organized by the Insitute on Aging and Lifelong Health at the Univers
 # Resources
 - [digital poster][digicaster]
 - [poster][poster]
-- [Full Schedule][schedule-summary]
+
+# Shared Documents
+- master copy of the [detailed schedule][schedule] for both lectures and live coding session
+- google doc with [notes and sketches for colloquium talks][notes_talks]
+- google doc with [notes and sketches for live coding sessions][notes_live]
+
+[notes_talks]:https://docs.google.com/document/d/15SYHa7mftXQk8qyGJ9aT26kQOjbCqtzrg6IS68Foflc/edit?usp=sharing
+[notes_live]:https://docs.google.com/document/d/1ARRecAQWkWZ80dedC5Qcv7_fHOAny_sE1fHipssauJU/edit?usp=sharing
+[schedule]:https://docs.google.com/document/d/1emVSoSsf7Sh1fSXrl_S_kC3ng_-lCD8t5EtIb1AHea8/edit?usp=sharing
 
 # Talk Series
 - 1A 
