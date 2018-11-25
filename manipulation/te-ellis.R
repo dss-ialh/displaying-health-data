@@ -406,7 +406,7 @@ sql_create <- c(
     	county_id                          INTEGER NOT NULL,
       month                              VARCHAR NOT NULL,         -- There's no date type in SQLite.  Make sure it's ISO8601: yyyy-mm-dd
       fte                                REAL    NOT NULL,
-      fte_approximated                   REAL    NOT NULL,
+      fte_approximated                   BIT     NOT NULL,
       month_missing                      INTEGER NOT NULL,         -- There's no bit/boolean type in SQLite
       fte_rolling_median_11_month        INTEGER --, --  NOT NULL
 
