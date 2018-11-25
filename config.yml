@@ -1,4 +1,5 @@
 default:
+    path_subject_1_raw:     "data-public/raw/subject-1.csv"
     path_mlm_1_raw:         "data-public/raw/mlm-1.csv"
     path_database:          "data-public/derived/mlm.sqlite3"
     path_county_derived:    "data-public/derived/county.rds"

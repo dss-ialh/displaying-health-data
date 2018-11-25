@@ -30,7 +30,7 @@ subject_count       <- 20
 wave_count          <- 10
 
 possible_year_start <- 2000:2005
-possible_age_start  <- 70:75
+possible_age_start  <- 55:75
 possible_county_id  <- c(51L, 55L, 72L)
 possible_county_index  <- seq_along(possible_county_id)
 possible_gender_id     <- c(1L, 2L, 255L)
@@ -252,5 +252,5 @@ ds_slim
 
 # ---- save-to-disk ------------------------------------------------------------
 # If there's no PHI, a rectangular CSV is usually adequate, and it's portable to other machines and software.
-readr::write_csv(ds_slim, config$path_mlm_1_raw)
-# readr::write_rds(ds_slim, path_out_unified, compress="gz") # Save as a compressed R-binary file if it's large or has a lot of factors.
+readr::write_csv(ds_slim        , config$path_mlm_1_raw)
+readr::write_csv(ds_slim_subject, config$path_subject_1_raw)
