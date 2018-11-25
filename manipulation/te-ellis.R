@@ -408,9 +408,9 @@ sql_create <- c(
       fte                                REAL    NOT NULL,
       fte_approximated                   REAL    NOT NULL,
       month_missing                      INTEGER NOT NULL,         -- There's no bit/boolean type in SQLite
-      fte_rolling_median_11_month        INTEGER, --  NOT NULL
+      fte_rolling_median_11_month        INTEGER --, --  NOT NULL
 
-      FOREIGN KEY(county_id) REFERENCES county(county_id)
+      -- FOREIGN KEY(county_id) REFERENCES county(county_id)
     );
   "
 )
@@ -419,8 +419,8 @@ sql_create <- c(
 
 # Open connection
 cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
-result <- DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
-DBI::dbClearResult(result)
+# result <- DBI::dbSendQuery(cnn, "PRAGMA foreign_keys=ON;") #This needs to be activated each time a connection is made. #http://stackoverflow.com/questions/15301643/sqlite3-forgets-to-use-foreign-keys
+# DBI::dbClearResult(result)
 DBI::dbListTables(cnn)
 
 # Create tables

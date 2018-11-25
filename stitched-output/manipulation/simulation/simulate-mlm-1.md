@@ -21,15 +21,68 @@ library(magrittr            , quietly=TRUE)
 
 # Verify these packages are available on the machine, but their functions need to be qualified: http://r-pkgs.had.co.nz/namespace.html#search-path
 requireNamespace("readr"        )
+```
+
+```
+## Loading required namespace: readr
+```
+
+```r
 requireNamespace("tidyr"        )
+```
+
+```
+## Loading required namespace: tidyr
+```
+
+```r
 requireNamespace("dplyr"        ) # Avoid attaching dplyr, b/c its function names conflict with a lot of packages (esp base, stats, and plyr).
+```
+
+```
+## Loading required namespace: dplyr
+```
+
+```r
 requireNamespace("rlang"        ) # Language constucts, like quosures
 requireNamespace("testit"       ) # For asserting conditions meet expected patterns/conditions.
+```
+
+```
+## Loading required namespace: testit
+```
+
+```r
 requireNamespace("checkmate"    ) # For asserting conditions meet expected patterns/conditions. # remotes::install_github("mllg/checkmate")
+```
+
+```
+## Loading required namespace: checkmate
+```
+
+```r
 requireNamespace("DBI"          ) # Database-agnostic interface
+```
+
+```
+## Loading required namespace: DBI
+```
+
+```r
 requireNamespace("RSQLite"      ) # Lightweight database for non-PHI data.
+```
+
+```
+## Loading required namespace: RSQLite
+```
+
+```r
 # requireNamespace("RODBC"      ) # For communicating with SQL Server over a locally-configured DSN.  Uncomment if you use 'upload-to-db' chunk.
 requireNamespace("OuhscMunge"   ) # remotes::install_github(repo="OuhscBbmc/OuhscMunge")
+```
+
+```
+## Loading required namespace: OuhscMunge
 ```
 
 ```r
@@ -268,7 +321,7 @@ ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
 ```r
 # OuhscMunge::verify_value_headstart(ds_subject)
 checkmate::assert_factor(   ds_subject$subject_id     , any.missing=F                          , unique=T)
-# checkmate::assert_integer(  ds_subject$county_id      , any.missing=F , lower=51, upper=72     )
+checkmate::assert_integer(  ds_subject$county_id      , any.missing=F , lower=51, upper=72     )
 checkmate::assert_integer(  ds_subject$gender_id      , any.missing=F , lower=1, upper=255     )
 checkmate::assert_character(ds_subject$race           , any.missing=F , pattern="^.{5,41}$"    )
 checkmate::assert_character(ds_subject$ethnicity      , any.missing=F , pattern="^.{18,30}$"   )
@@ -277,14 +330,7 @@ checkmate::assert_character(ds_subject$ethnicity      , any.missing=F , pattern=
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
-checkmate::assert_integer( ds$age               , any.missing=F , lower=70, upper=85     )
-```
-
-```
-## Error in eval(expr, envir, enclos): Assertion on 'ds$age' failed: Element 1 is not >= 70.
-```
-
-```r
+checkmate::assert_integer( ds$age               , any.missing=F , lower=55, upper=85     )
 checkmate::assert_integer( ds$county_id         , any.missing=F , lower=1, upper=77      )
 
 checkmate::assert_numeric( ds$int_factor_1      , any.missing=F , lower=4, upper=20      )
@@ -341,12 +387,12 @@ ds_slim
 
 ```r
 ds_slim_subject <-
-  ds %>%
+  ds_subject %>%
   # dplyr::slice(1:100) %>%
   dplyr::select(
     !!c(
       "subject_id",
-      # "county_id", # Intentionally excluding this from the outptu, to mimic what the ellis has to do sometimes.
+      "county_id", # May intentionally exclude this from the outptu, to mimic what the ellis has to do sometimes.
       "gender_id",
       "race",
       "ethnicity"
@@ -408,30 +454,26 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggplot2_3.1.0                   magrittr_1.5                   
-## [3] bindrcpp_0.2.2                  displayinghealthdata_0.0.1.9001
+## [1] ggplot2_3.1.0  bindrcpp_0.2.2 magrittr_1.5  
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_0.2.5      purrr_0.2.5           colorspace_1.3-2     
-##  [4] htmltools_0.3.6       viridisLite_0.3.0     yaml_2.2.0           
-##  [7] utf8_1.1.4            blob_1.1.1            rlang_0.3.0.1        
-## [10] pillar_1.3.0          withr_2.1.2           glue_1.3.0           
-## [13] DBI_1.0.0             bit64_0.9-7           plyr_1.8.4           
-## [16] bindr_0.1.1           stringr_1.3.1         munsell_0.5.0        
-## [19] gtable_0.2.0          rvest_0.3.2           kableExtra_0.9.0     
-## [22] evaluate_0.12         memoise_1.1.0         labeling_0.3         
-## [25] knitr_1.20            OuhscMunge_0.1.9.9009 markdown_0.8         
-## [28] fansi_0.4.0           highr_0.7             Rcpp_1.0.0           
-## [31] readr_1.2.1           scales_1.0.0          backports_1.1.2      
-## [34] checkmate_1.8.9-9000  config_0.3            bit_1.1-14           
-## [37] testit_0.8.1          hms_0.4.2.9001        packrat_0.5.0        
-## [40] digest_0.6.18         stringi_1.2.4         codified_0.2.0       
-## [43] dplyr_0.7.8           rprojroot_1.3-2       grid_3.5.1           
-## [46] cli_1.0.1             tools_3.5.1           lazyeval_0.2.1       
-## [49] tibble_1.4.2          RSQLite_2.1.1         crayon_1.3.4         
-## [52] tidyr_0.8.2           pkgconfig_2.0.2       xml2_1.2.0           
-## [55] assertthat_0.2.0      rmarkdown_1.10        httr_1.3.1           
-## [58] rstudioapi_0.8        R6_2.3.0              compiler_3.5.1
+##  [1] Rcpp_1.0.0            highr_0.7             plyr_1.8.4           
+##  [4] pillar_1.3.0          compiler_3.5.1        bindr_0.1.1          
+##  [7] tools_3.5.1           digest_0.6.18         packrat_0.5.0        
+## [10] bit_1.1-14            gtable_0.2.0          evaluate_0.12        
+## [13] RSQLite_2.1.1         memoise_1.1.0         tibble_1.4.2         
+## [16] checkmate_1.8.9-9000  pkgconfig_2.0.2       rlang_0.3.0.1        
+## [19] DBI_1.0.0             cli_1.0.1             yaml_2.2.0           
+## [22] withr_2.1.2           dplyr_0.7.8           stringr_1.3.1        
+## [25] knitr_1.20            hms_0.4.2.9001        grid_3.5.1           
+## [28] bit64_0.9-7           tidyselect_0.2.5      glue_1.3.0           
+## [31] OuhscMunge_0.1.9.9009 R6_2.3.0              fansi_0.4.0          
+## [34] tidyr_0.8.2           readr_1.2.1           purrr_0.2.5          
+## [37] blob_1.1.1            scales_1.0.0          backports_1.1.2      
+## [40] assertthat_0.2.0      testit_0.8.1          colorspace_1.3-2     
+## [43] labeling_0.3          config_0.3            utf8_1.1.4           
+## [46] stringi_1.2.4         lazyeval_0.2.1        munsell_0.5.0        
+## [49] crayon_1.3.4
 ```
 
 ```r
@@ -439,6 +481,6 @@ Sys.time()
 ```
 
 ```
-## [1] "2018-11-25 10:08:33 PST"
+## [1] "2018-11-25 10:58:23 PST"
 ```
 
