@@ -26,7 +26,8 @@ ds_rail  <- tibble::tribble(
   "run_file_r"    , "manipulation/te-ellis.R",
 
   # Scribes
-  "run_file_r"    , "manipulation/mlm-1-scribe.R"
+  "run_file_r"    , "manipulation/mlm-1-scribe.R",
+  "run_file_r"    , "manipulation/te-scribe.R"
 
   # Reports
 

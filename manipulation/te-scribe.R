@@ -27,8 +27,17 @@ sql_county <-
       t.county_id
       ,luc.county_name      AS county
       ,avg(t.fte)           AS fte
+  	  ,count(cog_1)         AS cog_1_count
+  	  ,avg(cog_1)           AS cog_1
+  	  ,avg(cog_2)           AS cog_2
+  	  ,avg(cog_3)           AS cog_3
+  	  ,avg(phys_1)          AS phys_1
+  	  ,avg(phys_2)          AS phys_2
+  	  ,avg(phys_3)          AS phys_3
     FROM te_month AS t
-      LEFT JOIN county AS luc ON t.county_id = luc.county_id
+      LEFT JOIN county  AS luc ON   t.county_id  = luc.county_id
+  	  LEFT JOIN subject AS   s ON luc.county_id  =   s.county_id
+  	  LEFT JOIN mlm_1   AS   m ON   s.subject_id =   m.subject_id
     GROUP BY t.county_id, luc.county_name
     ORDER BY t.county_id
   "
@@ -61,6 +70,9 @@ checkmate::assert_data_frame(ds_county_month     , min.rows = 2 *77)
 
 # ---- tweak-data --------------------------------------------------------------
 dim(ds_county)
+ds_county <-
+  ds_county %>%
+  tibble::as_tibble()
 
 dim(ds_county_month)
 ds_county_month <-
@@ -93,11 +105,49 @@ ds_county_month %>%
   tibble::as_tibble() %>%
   t()
 
+# ---- specify-columns-to-upload -----------------------------------------------
+# dput(colnames(ds_county_month)) # Print colnames for line below.
+columns_to_write_county_month <- c(
+  "county_id", "county", "month", "fte", "fte_approximated",
+  "month_missing", "fte_rolling_median_11_month"
+)
+ds_slim_county_month <-
+  ds_county_month %>%
+  dplyr::select(!!columns_to_write_county_month) %>%
+  # dplyr::slice(1:100) %>%
+  dplyr::mutate_if(is.logical, as.integer)       # Some databases & drivers need 0/1 instead of FALSE/TRUE.
+ds_slim_county_month
+
+rm(columns_to_write_county_month)
+
+# dput(colnames(ds_county)) # Print colnames for line below.
+columns_to_write_county <- c(
+  "county_id", "county", "fte",
+  "cog_1_count",
+  "cog_1", "cog_2", "cog_3",
+  "phys_1", "phys_2", "phys_3"
+)
+ds_slim_county <-
+  ds_county %>%
+  dplyr::select(!!columns_to_write_county) %>%
+  # dplyr::slice(1:100) %>%
+  dplyr::mutate_if(is.logical, as.integer)       # Some databases & drivers need 0/1 instead of FALSE/TRUE.
+ds_slim_county
+
+rm(columns_to_write_county)
+
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_county)
 checkmate::assert_integer(  ds_county$county_id , any.missing=F , lower=1, upper=77   , unique=T)
 checkmate::assert_character(ds_county$county    , any.missing=F , pattern="^.{3,12}$" , unique=T)
 checkmate::assert_numeric(  ds_county$fte       , any.missing=F , lower=0, upper=22   )
+checkmate::assert_numeric(  ds_county$cog_1       , any.missing=T , lower=4, upper=6    )
+checkmate::assert_numeric(  ds_county$cog_2       , any.missing=T , lower=5, upper=7    )
+checkmate::assert_numeric(  ds_county$cog_3       , any.missing=T , lower=6, upper=9    )
+checkmate::assert_numeric(  ds_county$phys_1      , any.missing=T , lower=2, upper=4    )
+checkmate::assert_numeric(  ds_county$phys_2      , any.missing=T , lower=3, upper=5    )
+checkmate::assert_numeric(  ds_county$phys_3      , any.missing=T , lower=1, upper=2    )
+
 
 checkmate::assert_integer(  ds_county_month$county_id                   , any.missing=F , lower=1, upper=77                                        )
 checkmate::assert_character(ds_county_month$county                      , any.missing=F , pattern="^.{3,12}$"                                      )
@@ -111,5 +161,5 @@ county_month_combo   <- paste(ds_county_month$county_id, ds_county_month$month)
 checkmate::assert_character(county_month_combo, pattern  ="^\\d{1,2} \\d{4}-\\d{2}-\\d{2}$"            , any.missing=F, unique=T)
 
 # ---- save-to-disk ------------------------------------------------------------
-readr::write_rds(ds_county        , config$path_te_county           , compress="gz")
-readr::write_rds(ds_county_month  , config$path_te_county_month     , compress="gz")
+readr::write_rds(ds_slim_county        , config$path_te_county           , compress="gz")
+readr::write_rds(ds_slim_county_month  , config$path_te_county_month     , compress="gz")
