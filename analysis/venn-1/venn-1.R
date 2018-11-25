@@ -6,8 +6,8 @@ rm(list=ls(all=TRUE)) #Clear the memory of variables from previous run. This is 
 # source("./SomethingSomething.R")
 source("./scripts/functions-common.R") # used in multiple reports
 source("./scripts/graphing/graph-presets.R") # fonts, colors, themes
-source("./scripts/graphing/graph-elemental.R")
-source("./scripts/graphing/graph-complex.R")
+source("./scripts/graphing/graph-venn-diagram.R")
+
 
 # ---- load-packages -----------------------------------------------------------
 library(magrittr) #Pipes
@@ -33,15 +33,11 @@ ds %>% dplyr::glimpse(50)
 ds <- ds %>%
   dplyr::rename(
     age_at_visit = age
-    ,date_at_visit = year
+    # ,date_at_visit = year
     ,fu_year = wave_id
   )
 
 # ---- basic-graph -------------------------------------------------------------
-line_alpha = 1
-line_size = .5
-ds %>% elemental_line("cog_1", "age_at_visit", "black", line_alpha, line_size, F)
-ds %>% complex_line(variable_name = "cog_1")
 
 # ---- scatterplots ------------------------------------------------------------
 
