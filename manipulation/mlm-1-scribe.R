@@ -30,7 +30,7 @@ sql_event <-
       s.gender_id,
       s.race,
       s.ethnicity,
-      luc.county_name,
+      luc.county_name             AS county,
       m.wave_id,
       m.year,
       m.age,
@@ -79,7 +79,7 @@ dim(ds)
 # ---- collapse-to-county ------------------------------------------------------
 ds_county <-
   ds %>%
-  dplyr::group_by(county_id, county_name) %>%
+  dplyr::group_by(county_id, county) %>%
   dplyr::summarize(
     cog_1_mean      = mean(cog_1    , na.rm=T),
     cog_2_mean      = mean(cog_2    , na.rm=T),
@@ -93,7 +93,7 @@ ds_county <-
 # ---- collapse-to-county-year ------------------------------------------------------
 ds_county_year <-
   ds %>%
-  dplyr::group_by(county_id, county_name, year) %>%
+  dplyr::group_by(county_id, county, year) %>%
   dplyr::summarize(
     cog_1_mean      = mean(cog_1    , na.rm=T),
     cog_2_mean      = mean(cog_2    , na.rm=T),
@@ -132,7 +132,7 @@ ds %>%
 checkmate::assert_integer(  ds$subject_wave_id , any.missing=F , lower=1, upper=200   , unique=T)
 checkmate::assert_integer(  ds$subject_id      , any.missing=F , lower=1001, upper=1200 )
 checkmate::assert_integer(  ds$county_id       , any.missing=F , lower=51, upper=72     )
-checkmate::assert_character(ds$county_name     , any.missing=F , pattern="^.{5,8}$"     )
+checkmate::assert_character(ds$county          , any.missing=F , pattern="^.{5,8}$"     )
 checkmate::assert_integer(  ds$wave_id         , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer(  ds$year            , any.missing=F , lower=2000, upper=2014 )
 checkmate::assert_integer(  ds$age             , any.missing=F , lower=55, upper=84     )
