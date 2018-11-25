@@ -27,11 +27,14 @@ sql_event <-
       m.subject_wave_id,
       m.subject_id,
       s.county_id,
+      s.gender_id,
+      s.race,
+      s.ethnicity,
       luc.county_name,
       m.wave_id,
       m.year,
       m.age,
-      m.age_cut_3,
+      m.age_cut_4,
       m.age_80_plus,
       m.int_factor_1,
       m.slope_factor_1,
@@ -133,7 +136,7 @@ checkmate::assert_character(ds$county_name     , any.missing=F , pattern="^.{5,8
 checkmate::assert_integer(  ds$wave_id         , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer(  ds$year            , any.missing=F , lower=2000, upper=2014 )
 checkmate::assert_integer(  ds$age             , any.missing=F , lower=70, upper=84     )
-checkmate::assert_character(ds$age_cut_3       , any.missing=F , pattern="^.{3,5}$"     )
+checkmate::assert_character(ds$age_cut_4       , any.missing=F , pattern="^.{3,5}$"     )
 checkmate::assert_logical(  ds$age_80_plus     , any.missing=F                          )
 checkmate::assert_numeric(  ds$int_factor_1    , any.missing=F , lower=7, upper=20      )
 checkmate::assert_numeric(  ds$slope_factor_1  , any.missing=F , lower=-1, upper=1      )

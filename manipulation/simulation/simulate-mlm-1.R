@@ -191,7 +191,7 @@ ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_subject)
 checkmate::assert_factor(   ds_subject$subject_id     , any.missing=F                          , unique=T)
-# checkmate::assert_integer(  ds_subject$county_id      , any.missing=F , lower=51, upper=72     )
+checkmate::assert_integer(  ds_subject$county_id      , any.missing=F , lower=51, upper=72     )
 checkmate::assert_integer(  ds_subject$gender_id      , any.missing=F , lower=1, upper=255     )
 checkmate::assert_character(ds_subject$race           , any.missing=F , pattern="^.{5,41}$"    )
 checkmate::assert_character(ds_subject$ethnicity      , any.missing=F , pattern="^.{18,30}$"   )
@@ -200,7 +200,7 @@ checkmate::assert_character(ds_subject$ethnicity      , any.missing=F , pattern=
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
-checkmate::assert_integer( ds$age               , any.missing=F , lower=70, upper=85     )
+checkmate::assert_integer( ds$age               , any.missing=F , lower=55, upper=85     )
 checkmate::assert_integer( ds$county_id         , any.missing=F , lower=1, upper=77      )
 
 checkmate::assert_numeric( ds$int_factor_1      , any.missing=F , lower=4, upper=20      )
@@ -236,12 +236,12 @@ ds_slim <-
 ds_slim
 
 ds_slim_subject <-
-  ds %>%
+  ds_subject %>%
   # dplyr::slice(1:100) %>%
   dplyr::select(
     !!c(
       "subject_id",
-      # "county_id", # Intentionally excluding this from the outptu, to mimic what the ellis has to do sometimes.
+      "county_id", # May intentionally exclude this from the outptu, to mimic what the ellis has to do sometimes.
       "gender_id",
       "race",
       "ethnicity"

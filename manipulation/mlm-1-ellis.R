@@ -80,7 +80,7 @@ ds <-
   ) %>%
   dplyr::mutate(
     subject_id  = factor(subject_id),
-    age_cut_3   = cut(age, breaks=c(70, 75, 80, Inf), labels=c("70-74", "75-79", "80+"), include.lowest = T),
+    age_cut_4   = cut(age, breaks=c(50, 60, 70, 80, Inf), labels=c("50s", "60s", "70s", "80+"), include.lowest = T),
     age_80_plus = (80L <= age)
   )  %>%
   dplyr::arrange(subject_id, wave_id) %>%
@@ -116,8 +116,8 @@ checkmate::assert_integer( ds_subject$county_id       , any.missing=F , lower=51
 checkmate::assert_integer( ds_subject$county_id_count , any.missing=F , lower=1       )
 checkmate::assert_integer( ds_subject$year_min        , any.missing=F , lower=2000, upper=2005 )
 checkmate::assert_integer( ds_subject$year_max        , any.missing=F , lower=2009, upper=2014 )
-checkmate::assert_integer( ds_subject$age_min         , any.missing=F , lower=70, upper=75     )
-checkmate::assert_integer( ds_subject$age_max         , any.missing=F , lower=79, upper=84     )
+checkmate::assert_integer( ds_subject$age_min         , any.missing=F , lower=55, upper=75     )
+checkmate::assert_integer( ds_subject$age_max         , any.missing=F , lower=55, upper=90     )
 
 
 # OuhscMunge::verify_value_headstart(ds)
@@ -125,8 +125,8 @@ checkmate::assert_integer( ds$subject_wave_id   , any.missing=F , lower=1, upper
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
-checkmate::assert_integer( ds$age               , any.missing=F , lower=70, upper=85     )
-checkmate::assert_factor(  ds$age_cut_3         , any.missing=F                          )
+checkmate::assert_integer( ds$age               , any.missing=F , lower=55, upper=85     )
+checkmate::assert_factor(  ds$age_cut_4         , any.missing=F                          )
 checkmate::assert_logical( ds$age_80_plus       , any.missing=F                          )
 checkmate::assert_integer( ds$county_id         , any.missing=F , lower=1, upper=77      )
 
@@ -161,7 +161,7 @@ columns_to_write_subject <- c(
 columns_to_write <- c(
   "subject_wave_id", "subject_id",
   "wave_id", "year",
-  "age", "age_cut_3", "age_80_plus",
+  "age", "age_cut_4", "age_80_plus",
   #"county_id",
   "int_factor_1", "slope_factor_1",
   "cog_1", "cog_2", "cog_3",
@@ -178,8 +178,8 @@ rm(columns_to_write)
 
 # ---- save-to-disk ------------------------------------------------------------
 # If there's no PHI, a rectangular CSV is usually adequate, and it's portable to other machines and software.
-# readr::write_csv(ds, path_out_unified)
-# readr::write_rds(ds, path_out_unified, compress="gz") # Save as a compressed R-binary file if it's large or has a lot of factors.
+# readr::write_csv(ds_slim, path_out_unified)
+# readr::write_rds(ds_slim, path_out_unified, compress="gz") # Save as a compressed R-binary file if it's large or has a lot of factors.
 
 
 # ---- save-to-db --------------------------------------------------------------
@@ -188,23 +188,23 @@ rm(columns_to_write)
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
 # cat(dput(colnames(ds)), sep = "\n")
 sql_create <- c(
-  "
-    DROP TABLE IF EXISTS subject;
-  ",
+  # "
+  #   DROP TABLE IF EXISTS subject;
+  # ",
   "
     DROP TABLE IF EXISTS mlm_1;
   ",
-  "
-    CREATE TABLE `subject` (
-      subject_id              INT NOT NULL PRIMARY KEY,
-      county_id               INT NOT NULL,
-      county_id_count         INT NOT NULL,
-      year_min                FLOAT NOT NULL,
-      year_max                FLOAT NOT NULL,
-      age_min                 FLOAT NOT NULL,
-      age_max                 FLOAT NOT NULL
-    );
-  ",
+  # "
+  #   CREATE TABLE `subject` (
+  #     subject_id              INT NOT NULL PRIMARY KEY,
+  #     county_id               INT NOT NULL,
+  #     county_id_count         INT NOT NULL,
+  #     year_min                FLOAT NOT NULL,
+  #     year_max                FLOAT NOT NULL,
+  #     age_min                 FLOAT NOT NULL,
+  #     age_max                 FLOAT NOT NULL
+  #   );
+  # ",
   "
     CREATE TABLE mlm_1 (
       subject_wave_id         INT NOT NULL PRIMARY KEY,
@@ -212,7 +212,7 @@ sql_create <- c(
       wave_id                 INT NOT NULL,
       year                    INT NOT NULL,
       age                     INT NOT NULL,
-      age_cut_3               VARCHAR(5) NOT NULL,
+      age_cut_4               VARCHAR(5) NOT NULL,
       -- county_id               INT NOT NULL,
       age_80_plus             BIT NOT NULL,
       int_factor_1            FLOAT NOT NULL,
@@ -246,7 +246,7 @@ ds_slim %>%
   # dplyr::mutate_if(is.logical, as.integer) %>%        # Some databases & drivers need 0/1 instead of FALSE/TRUE.
 DBI::dbWriteTable(cnn, name='mlm_1',              value=.,        append=TRUE, row.names=FALSE)
 
-DBI::dbWriteTable(cnn, name='subject',            value=ds_subject,        append=TRUE, row.names=FALSE)
+# DBI::dbWriteTable(cnn, name='subject',            value=ds_subject,        append=TRUE, row.names=FALSE)
 
 # Close connection
 DBI::dbDisconnect(cnn)
