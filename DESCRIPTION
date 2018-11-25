@@ -29,6 +29,7 @@ Imports:
 Suggests:
     devtools (>= 1.13.0),
     rlang,
+    RSQLite,
     testthat (>= 0.9),
     tidyr (>= 0.7.0)
 Remotes:
