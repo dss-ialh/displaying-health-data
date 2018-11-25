@@ -187,9 +187,18 @@ rm(columns_to_write)
 #   * the data is relational and
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
 # cat(dput(colnames(ds)), sep = "\n")
-sql_create_tables <- "
+sql_drop_tables <- "
+  DROP TABLE IF EXISTS `subject`;
+  GO;
+  DROP TABLE IF EXISTS mlm_1;
+  GO;
+"
 
-  DROP TABLE IF EXISTS subject;
+sql_create_tables <- "
+  DROP TABLE IF EXISTS `subject`;
+  GO;
+  DELETE FROM subject;
+  GO;
   CREATE TABLE `subject` (
     subject_id              INT NOT NULL PRIMARY KEY,
     county_id               INT NOT NULL,
@@ -199,9 +208,13 @@ sql_create_tables <- "
     age_min                 FLOAT NOT NULL,
     age_max                 FLOAT NOT NULL
   );
+  GO;
 
   DROP TABLE IF EXISTS mlm_1;
-  CREATE TABLE `mlm_1` (
+  GO;
+  DELETE FROM mlm_1;
+  GO;
+  CREATE TABLE mlm_1 (
     subject_wave_id         INT NOT NULL PRIMARY KEY,
     subject_id              INT NOT NULL,
     wave_id                 INT NOT NULL,
@@ -218,7 +231,10 @@ sql_create_tables <- "
     phys_1                  FLOAT NOT NULL,
     phys_2                  FLOAT NOT NULL,
     phys_3                  FLOAT NOT NULL
-  );"
+  );
+
+  GO;
+"
 
 # Remove old DB
 # if( file.exists(path_db) ) file.remove(path_db)
@@ -230,9 +246,20 @@ DBI::dbClearResult(result)
 DBI::dbListTables(cnn)
 
 # Create tables
+
+result <- DBI::dbSendQuery(cnn, sql_drop_tables)
+DBI::dbClearResult(result)
+
+# DBI::dbRemoveTable(cnn, "mlm_1")
+# DBI::dbRemoveTable(cnn, "subject")
+
 result <- DBI::dbSendQuery(cnn, sql_create_tables)
 DBI::dbClearResult(result)
 DBI::dbListTables(cnn)
+
+# DBI::dbDisconnect(cnn)
+#
+# cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
 
 # Write to database
 ds_slim %>%
