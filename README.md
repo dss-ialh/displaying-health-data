@@ -24,3 +24,12 @@ Colloquium organized by the Insitute on Aging and Lifelong Health at the Univers
 [poster]:https://drive.google.com/open?id=1ko083Jix6jp6urFq-ghMhvlFs0P_5VQd
 [schedule-summary]:https://drive.google.com/open?id=1h5qDcoRTJNLSteSOc7AaJ4T7yiBHfANy
 
+
+### Installation and Documentation
+
+The repo dependencies can be installed from [GitHub](https://github.com/dss-ialh/displaying-health-data) after installing the `remotes` package.
+
+```r
+install.packages("remotes") # Run this line if the 'remotes' package isn't installed already.
+remotes::install_github(repo="dss-ialh/displaying-health-data")
+```

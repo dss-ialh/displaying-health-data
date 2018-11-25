@@ -1,0 +1,41 @@
+Package: displayinghealthdata
+Title: Displaying Health Data
+Description: Talks Series and Live Coding sessions at the University of Victoria..
+Version: 0.0.1.9001
+Date: 2018-11-25
+Authors@R: c(person("Will", "Beasley", role = c("aut", "cre"), email =
+    "wibeasley@hotmail.com", comment = c(ORCID = "0000-0002-5613-5006")),
+    person("Andrey", "Koval", role = "aut"))
+URL: https://github.com/dss-ialh/displaying-health-data
+BugReports: https://github.com/dss-ialh/displaying-health-data/issues
+Depends:
+    R(>= 3.0.0)
+Imports:
+    checkmate  (>= 1.8.4),
+    codified (>= 0.2.0),
+    DBI (>= 0.7.0),
+    dplyr (>= 0.5.0),
+    httr (>= 1.3.0),
+    kableExtra,
+    knitr (>= 1.18.0),
+    magrittr,
+    methods,
+    odbc (>= 1.1.1),
+    OuhscMunge (>= 0.1.9.9009),
+    readr (>= 1.2.1),
+    rmarkdown,
+    sessioninfo,
+    tibble (>= 1.4.0)
+Suggests:
+    devtools (>= 1.13.0),
+    rlang,
+    testthat (>= 0.9),
+    tidyr (>= 0.7.0)
+Remotes:
+  github::OuhscBbmc/OuhscMunge
+License: GPL-3 + file LICENSE
+LazyData: TRUE
+VignetteBuilder: knitr
+Encoding: UTF-8
+RoxygenNote: 6.1.0
+Roxygen: list(markdown = TRUE)
