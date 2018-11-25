@@ -49,7 +49,7 @@ col_types <- readr::cols_only(
 # ---- load-data ---------------------------------------------------------------
 # Read the CSVs
 # readr::spec_csv(config$path_mlm_1)
-ds <- readr::read_csv(config$path_mlm_1  , col_types=col_types)
+ds <- readr::read_csv(config$path_mlm_1_raw  , col_types=col_types)
 
 rm(col_types)
 
@@ -187,54 +187,45 @@ rm(columns_to_write)
 #   * the data is relational and
 #   * later, only portions need to be queried/retrieved at a time (b/c everything won't need to be loaded into R's memory)
 # cat(dput(colnames(ds)), sep = "\n")
-sql_drop_tables <- "
-  DROP TABLE IF EXISTS `subject`;
-  GO;
-  DROP TABLE IF EXISTS mlm_1;
-  GO;
-"
-
-sql_create_tables <- "
-  DROP TABLE IF EXISTS `subject`;
-  GO;
-  DELETE FROM subject;
-  GO;
-  CREATE TABLE `subject` (
-    subject_id              INT NOT NULL PRIMARY KEY,
-    county_id               INT NOT NULL,
-    county_id_count         INT NOT NULL,
-    year_min                FLOAT NOT NULL,
-    year_max                FLOAT NOT NULL,
-    age_min                 FLOAT NOT NULL,
-    age_max                 FLOAT NOT NULL
-  );
-  GO;
-
-  DROP TABLE IF EXISTS mlm_1;
-  GO;
-  DELETE FROM mlm_1;
-  GO;
-  CREATE TABLE mlm_1 (
-    subject_wave_id         INT NOT NULL PRIMARY KEY,
-    subject_id              INT NOT NULL,
-    wave_id                 INT NOT NULL,
-    year                    INT NOT NULL,
-    age                     INT NOT NULL,
-    age_cut_3               VARCHAR(5) NOT NULL,
-    -- county_id               INT NOT NULL,
-    age_80_plus             BIT NOT NULL,
-    int_factor_1            FLOAT NOT NULL,
-    slope_factor_1          FLOAT NOT NULL,
-    cog_1                   FLOAT NOT NULL,
-    cog_2                   FLOAT NOT NULL,
-    cog_3                   FLOAT NOT NULL,
-    phys_1                  FLOAT NOT NULL,
-    phys_2                  FLOAT NOT NULL,
-    phys_3                  FLOAT NOT NULL
-  );
-
-  GO;
-"
+sql_create <- c(
+  "
+    DROP TABLE IF EXISTS subject;
+  ",
+  "
+    DROP TABLE IF EXISTS mlm_1;
+  ",
+  "
+    CREATE TABLE `subject` (
+      subject_id              INT NOT NULL PRIMARY KEY,
+      county_id               INT NOT NULL,
+      county_id_count         INT NOT NULL,
+      year_min                FLOAT NOT NULL,
+      year_max                FLOAT NOT NULL,
+      age_min                 FLOAT NOT NULL,
+      age_max                 FLOAT NOT NULL
+    );
+  ",
+  "
+    CREATE TABLE mlm_1 (
+      subject_wave_id         INT NOT NULL PRIMARY KEY,
+      subject_id              INT NOT NULL,
+      wave_id                 INT NOT NULL,
+      year                    INT NOT NULL,
+      age                     INT NOT NULL,
+      age_cut_3               VARCHAR(5) NOT NULL,
+      -- county_id               INT NOT NULL,
+      age_80_plus             BIT NOT NULL,
+      int_factor_1            FLOAT NOT NULL,
+      slope_factor_1          FLOAT NOT NULL,
+      cog_1                   FLOAT NOT NULL,
+      cog_2                   FLOAT NOT NULL,
+      cog_3                   FLOAT NOT NULL,
+      phys_1                  FLOAT NOT NULL,
+      phys_2                  FLOAT NOT NULL,
+      phys_3                  FLOAT NOT NULL
+    )
+  "
+)
 
 # Remove old DB
 # if( file.exists(path_db) ) file.remove(path_db)
@@ -246,20 +237,9 @@ DBI::dbClearResult(result)
 DBI::dbListTables(cnn)
 
 # Create tables
-
-result <- DBI::dbSendQuery(cnn, sql_drop_tables)
-DBI::dbClearResult(result)
-
-# DBI::dbRemoveTable(cnn, "mlm_1")
-# DBI::dbRemoveTable(cnn, "subject")
-
-result <- DBI::dbSendQuery(cnn, sql_create_tables)
-DBI::dbClearResult(result)
+sql_create %>%
+  purrr::walk(~DBI::dbExecute(cnn, .))
 DBI::dbListTables(cnn)
-
-# DBI::dbDisconnect(cnn)
-#
-# cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
 
 # Write to database
 ds_slim %>%
