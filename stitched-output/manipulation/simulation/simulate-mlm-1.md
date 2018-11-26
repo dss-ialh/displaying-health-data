@@ -113,6 +113,7 @@ possible_ethnicity <- c(
   "Hispanic or Latino",
   "Unknown/Not Reported Ethnicity"
 )
+possible_date_offset    <- 30:120   # Add between 30 & 120 days to Jan 1, to get the exact visit date.
 
 int_county          <- c(2, 2.1, 4)
 slope_county        <- c(-.04, -.06, -.2)
@@ -188,6 +189,8 @@ ds <-
   dplyr::mutate(
     year            = wave_id + year_start - 1L,
     age             = wave_id + age_start  - 1L,
+
+    date_at_visit   = as.Date(ISOdate(year, 1, 1) + lubridate::days(sample(possible_date_offset, size=n(), replace=T)))
   ) %>%
   dplyr::mutate( # Generate cognitive manifest variables (ie, from factor 1)
     cog_1           =
@@ -244,7 +247,7 @@ ds
 ```
 
 ```
-## # A tibble: 200 x 20
+## # A tibble: 200 x 21
 ##    subject_id wave_id age_start county_index county_id gender_id race 
 ##    <fct>        <int>     <int>        <int>     <int>     <int> <chr>
 ##  1 1001             1        67            1        51         2 Nati…
@@ -257,10 +260,11 @@ ds
 ##  8 1001             8        67            1        51         2 Nati…
 ##  9 1001             9        67            1        51         2 Nati…
 ## 10 1001            10        67            1        51         2 Nati…
-## # ... with 190 more rows, and 13 more variables: ethnicity <chr>,
+## # ... with 190 more rows, and 14 more variables: ethnicity <chr>,
 ## #   int_factor_1 <dbl>, slope_factor_1 <dbl>, int_factor_2 <dbl>,
-## #   slope_factor_2 <dbl>, year <int>, age <int>, cog_1 <dbl>, cog_2 <dbl>,
-## #   cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>, phys_3 <dbl>
+## #   slope_factor_2 <dbl>, year <int>, age <int>, date_at_visit <date>,
+## #   cog_1 <dbl>, cog_2 <dbl>, cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>,
+## #   phys_3 <dbl>
 ```
 
 ```r
@@ -270,6 +274,7 @@ ds_long <-
     subject_id,
     wave_id,
     year,
+    date_at_visit,
     age,
     county_id,
     cog_1,
@@ -281,7 +286,7 @@ ds_long <-
   ) %>%
   tidyr::gather(
     key   = manifest,
-    value = value, -subject_id, -wave_id, -year, -age, -county_id
+    value = value, -subject_id, -wave_id, -year, -age, -county_id, -date_at_visit
   )
 ```
 
@@ -304,10 +309,16 @@ last_plot() + aes(x=year)
 <img src="stitched-output/manipulation/simulation/simulate-mlm-1/inspect-2.png" title="plot of chunk inspect" alt="plot of chunk inspect" style="display: block; margin: auto;" />
 
 ```r
-last_plot() + aes(x=age)
+last_plot() + aes(x=date_at_visit)
 ```
 
 <img src="stitched-output/manipulation/simulation/simulate-mlm-1/inspect-3.png" title="plot of chunk inspect" alt="plot of chunk inspect" style="display: block; margin: auto;" />
+
+```r
+last_plot() + aes(x=age)
+```
+
+<img src="stitched-output/manipulation/simulation/simulate-mlm-1/inspect-4.png" title="plot of chunk inspect" alt="plot of chunk inspect" style="display: block; margin: auto;" />
 
 ```r
 ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
@@ -316,7 +327,7 @@ ggplot(ds, aes(x=year, y=cog_1, color=factor(county_id), group=subject_id)) +
   theme(legend.position="top")
 ```
 
-<img src="stitched-output/manipulation/simulation/simulate-mlm-1/inspect-4.png" title="plot of chunk inspect" alt="plot of chunk inspect" style="display: block; margin: auto;" />
+<img src="stitched-output/manipulation/simulation/simulate-mlm-1/inspect-5.png" title="plot of chunk inspect" alt="plot of chunk inspect" style="display: block; margin: auto;" />
 
 ```r
 # OuhscMunge::verify_value_headstart(ds_subject)
@@ -330,6 +341,7 @@ checkmate::assert_character(ds_subject$ethnicity      , any.missing=F , pattern=
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
+checkmate::assert_date(    ds$date_at_visit     , any.missing=F , lower=as.Date("2000-01-01"), upper=as.Date("2018-12-31") )
 checkmate::assert_integer( ds$age               , any.missing=F , lower=55, upper=85     )
 checkmate::assert_integer( ds$county_id         , any.missing=F , lower=1, upper=77      )
 
@@ -358,7 +370,10 @@ ds_slim <-
   dplyr::select(
     !!c(
       "subject_id",
-      "wave_id", "year", "age", "county_id",
+      "wave_id",
+      # "year",
+      "date_at_visit",
+      "age", "county_id",
       "int_factor_1", "slope_factor_1",
       "cog_1", "cog_2", "cog_3",
       "phys_1", "phys_2", "phys_3"
@@ -369,20 +384,21 @@ ds_slim
 
 ```
 ## # A tibble: 200 x 13
-##    subject_id wave_id  year   age county_id int_factor_1 slope_factor_1
-##    <fct>        <int> <int> <int>     <int>        <dbl>          <dbl>
-##  1 1001             1  2000    67        51         8.90         -0.029
-##  2 1001             2  2001    68        51         8.90         -0.029
-##  3 1001             3  2002    69        51         8.90         -0.029
-##  4 1001             4  2003    70        51         8.90         -0.029
-##  5 1001             5  2004    71        51         8.90         -0.029
-##  6 1001             6  2005    72        51         8.90         -0.029
-##  7 1001             7  2006    73        51         8.90         -0.029
-##  8 1001             8  2007    74        51         8.90         -0.029
-##  9 1001             9  2008    75        51         8.90         -0.029
-## 10 1001            10  2009    76        51         8.90         -0.029
-## # ... with 190 more rows, and 6 more variables: cog_1 <dbl>, cog_2 <dbl>,
-## #   cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>, phys_3 <dbl>
+##    subject_id wave_id date_at_visit   age county_id int_factor_1
+##    <fct>        <int> <date>        <int>     <int>        <dbl>
+##  1 1001             1 2000-04-25       67        51         8.90
+##  2 1001             2 2001-02-12       68        51         8.90
+##  3 1001             3 2002-02-26       69        51         8.90
+##  4 1001             4 2003-04-16       70        51         8.90
+##  5 1001             5 2004-02-10       71        51         8.90
+##  6 1001             6 2005-02-17       72        51         8.90
+##  7 1001             7 2006-02-15       73        51         8.90
+##  8 1001             8 2007-04-05       74        51         8.90
+##  9 1001             9 2008-03-14       75        51         8.90
+## 10 1001            10 2009-02-09       76        51         8.90
+## # ... with 190 more rows, and 7 more variables: slope_factor_1 <dbl>,
+## #   cog_1 <dbl>, cog_2 <dbl>, cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>,
+## #   phys_3 <dbl>
 ```
 
 ```r
@@ -403,20 +419,21 @@ ds_slim
 
 ```
 ## # A tibble: 200 x 13
-##    subject_id wave_id  year   age county_id int_factor_1 slope_factor_1
-##    <fct>        <int> <int> <int>     <int>        <dbl>          <dbl>
-##  1 1001             1  2000    67        51         8.90         -0.029
-##  2 1001             2  2001    68        51         8.90         -0.029
-##  3 1001             3  2002    69        51         8.90         -0.029
-##  4 1001             4  2003    70        51         8.90         -0.029
-##  5 1001             5  2004    71        51         8.90         -0.029
-##  6 1001             6  2005    72        51         8.90         -0.029
-##  7 1001             7  2006    73        51         8.90         -0.029
-##  8 1001             8  2007    74        51         8.90         -0.029
-##  9 1001             9  2008    75        51         8.90         -0.029
-## 10 1001            10  2009    76        51         8.90         -0.029
-## # ... with 190 more rows, and 6 more variables: cog_1 <dbl>, cog_2 <dbl>,
-## #   cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>, phys_3 <dbl>
+##    subject_id wave_id date_at_visit   age county_id int_factor_1
+##    <fct>        <int> <date>        <int>     <int>        <dbl>
+##  1 1001             1 2000-04-25       67        51         8.90
+##  2 1001             2 2001-02-12       68        51         8.90
+##  3 1001             3 2002-02-26       69        51         8.90
+##  4 1001             4 2003-04-16       70        51         8.90
+##  5 1001             5 2004-02-10       71        51         8.90
+##  6 1001             6 2005-02-17       72        51         8.90
+##  7 1001             7 2006-02-15       73        51         8.90
+##  8 1001             8 2007-04-05       74        51         8.90
+##  9 1001             9 2008-03-14       75        51         8.90
+## 10 1001            10 2009-02-09       76        51         8.90
+## # ... with 190 more rows, and 7 more variables: slope_factor_1 <dbl>,
+## #   cog_1 <dbl>, cog_2 <dbl>, cog_3 <dbl>, phys_1 <dbl>, phys_2 <dbl>,
+## #   phys_3 <dbl>
 ```
 
 ```r
@@ -460,20 +477,20 @@ sessionInfo()
 ##  [1] Rcpp_1.0.0            highr_0.7             plyr_1.8.4           
 ##  [4] pillar_1.3.0          compiler_3.5.1        bindr_0.1.1          
 ##  [7] tools_3.5.1           digest_0.6.18         packrat_0.5.0        
-## [10] bit_1.1-14            gtable_0.2.0          evaluate_0.12        
-## [13] RSQLite_2.1.1         memoise_1.1.0         tibble_1.4.2         
-## [16] checkmate_1.8.9-9000  pkgconfig_2.0.2       rlang_0.3.0.1        
-## [19] DBI_1.0.0             cli_1.0.1             yaml_2.2.0           
-## [22] withr_2.1.2           dplyr_0.7.8           stringr_1.3.1        
-## [25] knitr_1.20            hms_0.4.2.9001        grid_3.5.1           
-## [28] bit64_0.9-7           tidyselect_0.2.5      glue_1.3.0           
-## [31] OuhscMunge_0.1.9.9009 R6_2.3.0              fansi_0.4.0          
-## [34] tidyr_0.8.2           readr_1.2.1           purrr_0.2.5          
-## [37] blob_1.1.1            scales_1.0.0          backports_1.1.2      
-## [40] assertthat_0.2.0      testit_0.8.1          colorspace_1.3-2     
-## [43] labeling_0.3          config_0.3            utf8_1.1.4           
-## [46] stringi_1.2.4         lazyeval_0.2.1        munsell_0.5.0        
-## [49] crayon_1.3.4
+## [10] bit_1.1-14            gtable_0.2.0          lubridate_1.7.4      
+## [13] evaluate_0.12         RSQLite_2.1.1         memoise_1.1.0        
+## [16] tibble_1.4.2          checkmate_1.8.9-9000  pkgconfig_2.0.2      
+## [19] rlang_0.3.0.1         DBI_1.0.0             cli_1.0.1            
+## [22] yaml_2.2.0            withr_2.1.2           dplyr_0.7.8          
+## [25] stringr_1.3.1         knitr_1.20            hms_0.4.2.9001       
+## [28] grid_3.5.1            bit64_0.9-7           tidyselect_0.2.5     
+## [31] glue_1.3.0            OuhscMunge_0.1.9.9009 R6_2.3.0             
+## [34] fansi_0.4.0           tidyr_0.8.2           readr_1.2.1          
+## [37] purrr_0.2.5           blob_1.1.1            scales_1.0.0         
+## [40] backports_1.1.2       assertthat_0.2.0      testit_0.8.1         
+## [43] colorspace_1.3-2      labeling_0.3          config_0.3           
+## [46] utf8_1.1.4            stringi_1.2.4         lazyeval_0.2.1       
+## [49] munsell_0.5.0         crayon_1.3.4
 ```
 
 ```r
@@ -481,6 +498,6 @@ Sys.time()
 ```
 
 ```
-## [1] "2018-11-25 10:58:23 PST"
+## [1] "2018-11-25 12:13:48 PST"
 ```
 

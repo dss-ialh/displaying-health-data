@@ -33,6 +33,7 @@ sql_event <-
       luc.county_name             AS county,
       m.wave_id,
       m.year,
+      m.date_at_visit,
       m.age,
       m.age_cut_4,
       m.age_80_plus,
@@ -72,7 +73,9 @@ ds <-
   ds %>%
   tibble::as_tibble() %>%
   dplyr::mutate(
-    age_80_plus         = as.logical(age_80_plus)
+    # When reading from SQLite, there are some data types that need to be cast explicitly.  SQL Server and the 'odbc' package handles dates and bits/logicals naturally.
+    age_80_plus         = as.logical(age_80_plus),
+    date_at_visit       = as.Date(date_at_visit)
   )
 dim(ds)
 
@@ -135,6 +138,7 @@ checkmate::assert_integer(  ds$county_id       , any.missing=F , lower=51, upper
 checkmate::assert_character(ds$county          , any.missing=F , pattern="^.{5,8}$"     )
 checkmate::assert_integer(  ds$wave_id         , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer(  ds$year            , any.missing=F , lower=2000, upper=2014 )
+checkmate::assert_date(     ds$date_at_visit     , any.missing=F , lower=as.Date("2000-01-01"), upper=as.Date("2018-12-31") )
 checkmate::assert_integer(  ds$age             , any.missing=F , lower=55, upper=84     )
 checkmate::assert_character(ds$age_cut_4       , any.missing=F , pattern="^.{3,5}$"     )
 checkmate::assert_logical(  ds$age_80_plus     , any.missing=F                          )

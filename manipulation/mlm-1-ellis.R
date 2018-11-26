@@ -33,8 +33,9 @@ figure_path <- 'stitched-output/manipulation/ellis/mlm-1-ellis/'
 col_types <- readr::cols_only(
   subject_id          = readr::col_integer(),
   wave_id             = readr::col_integer(),
-  year                = readr::col_integer(),
+  # year                = readr::col_integer(),
   age                 = readr::col_integer(),
+  date_at_visit       = readr::col_date(),
   county_id           = readr::col_integer(),
   int_factor_1        = readr::col_double(),
   slope_factor_1      = readr::col_double(),
@@ -66,7 +67,8 @@ ds <-
   dplyr::select_( #`select()` implicitly drops the other columns not mentioned.
     "subject_id"
     , "wave_id"
-    , "year"
+    # , "year"
+    , "date_at_visit"
     , "age"
     , "county_id"
     , "int_factor_1"
@@ -80,6 +82,7 @@ ds <-
   ) %>%
   dplyr::mutate(
     subject_id  = factor(subject_id),
+    year        = as.integer(lubridate::year(date_at_visit)),
     age_cut_4   = cut(age, breaks=c(50, 60, 70, 80, Inf), labels=c("50s", "60s", "70s", "80+"), include.lowest = T),
     age_80_plus = (80L <= age)
   )  %>%
@@ -125,6 +128,7 @@ checkmate::assert_integer( ds$subject_wave_id   , any.missing=F , lower=1, upper
 checkmate::assert_factor(  ds$subject_id        , any.missing=F                          )
 checkmate::assert_integer( ds$wave_id           , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer( ds$year              , any.missing=F , lower=2000, upper=2014 )
+checkmate::assert_date(    ds$date_at_visit     , any.missing=F , lower=as.Date("2000-01-01"), upper=as.Date("2018-12-31") )
 checkmate::assert_integer( ds$age               , any.missing=F , lower=55, upper=85     )
 checkmate::assert_factor(  ds$age_cut_4         , any.missing=F                          )
 checkmate::assert_logical( ds$age_80_plus       , any.missing=F                          )
@@ -160,7 +164,7 @@ columns_to_write_subject <- c(
 )
 columns_to_write <- c(
   "subject_wave_id", "subject_id",
-  "wave_id", "year",
+  "wave_id", "year", "date_at_visit",
   "age", "age_cut_4", "age_80_plus",
   #"county_id",
   "int_factor_1", "slope_factor_1",
@@ -211,6 +215,7 @@ sql_create <- c(
       subject_id              INT NOT NULL,
       wave_id                 INT NOT NULL,
       year                    INT NOT NULL,
+      date_at_visit           DATE NOT NULL,
       age                     INT NOT NULL,
       age_cut_4               VARCHAR(5) NOT NULL,
       -- county_id               INT NOT NULL,
@@ -244,7 +249,11 @@ DBI::dbListTables(cnn)
 # Write to database
 ds_slim %>%
   # dplyr::mutate_if(is.logical, as.integer) %>%        # Some databases & drivers need 0/1 instead of FALSE/TRUE.
-DBI::dbWriteTable(cnn, name='mlm_1',              value=.,        append=TRUE, row.names=FALSE)
+  # dplyr::mutate_if(is.Date, as.character) %>%        # Some databases & drivers need 0/1 instead of FALSE/TRUE.
+  dplyr::mutate(
+    date_at_visit   = as.character(date_at_visit    )
+  ) %>%
+  DBI::dbWriteTable(cnn, name='mlm_1',              value=.,        append=TRUE, row.names=FALSE)
 
 # DBI::dbWriteTable(cnn, name='subject',            value=ds_subject,        append=TRUE, row.names=FALSE)
 
