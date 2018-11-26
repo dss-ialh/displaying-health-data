@@ -20,7 +20,7 @@ options(show.signif.stars=F) #Turn off the annotations on p-values
 config                         <- config::get()
 
 # desired_models            <- "PAT"
-county_focus              <- 72L
+county_id_focus           <- 72L
 base_size                 <- 14L
 
 
@@ -37,12 +37,11 @@ ds_county_year    <- readr::read_rds(config$path_county_year_derived)
 # ds_annotation       <- read.csv(config$path_annotation)
 
 # ---- tweak-data --------------------------------------------------------------
-
 ds <-
   ds %>%
   # dplyr::filter(county %in% desired_counties) %>%
   dplyr::mutate(
-    emphasis        = dplyr::if_else(county_id == county_focus, "focus", "background"),
+    emphasis        = dplyr::if_else(county_id == county_id_focus, "focus", "background"),
     county_id       = factor(county_id)
   )
 
@@ -55,7 +54,7 @@ ds_county <-
     label     = sprintf("%s mean:\n%3.1f", county, cog)
   ) %>%
   dplyr::mutate(
-    emphasis        = dplyr::if_else(county_id == county_focus, "focus", "background"),
+    emphasis        = dplyr::if_else(county_id == county_id_focus, "focus", "background"),
     county_id       = factor(county_id)
   )
 
@@ -63,9 +62,14 @@ ds_county_year <-
   ds_county_year %>%
   tibble::as_tibble() %>%
   dplyr::mutate(
-    emphasis        = dplyr::if_else(county_id == county_focus, "focus", "background"),
+    emphasis        = dplyr::if_else(county_id == county_id_focus, "focus", "background"),
     county_id       = factor(county_id)
   )
+
+county_name_focus   <-
+  ds_county %>%
+  dplyr::filter(county_id == county_id_focus) %>%
+  dplyr::pull(county)
 
 # ---- headline-graph ----------------------------------------------------------
 # cat("\n\n\n### Goals Status-- (ALL REPORTING PERIOD)\n\n\n")
@@ -195,6 +199,50 @@ spaghetti_1(
   width               = c("focus"=2, "background"=1),
   base_size           = 18
 )
+
+
+cat("\n\n### Cog 1<br/><b>Subject-Year</b>\n\n")
+spaghetti_1(
+  d                   = ds,
+  response_variable   = "cog_1",
+  time_variable       = "year",
+  color_variable      = "county",
+  group_variable      = "subject_id",
+  facet_variable      = NULL,
+  palette             = palette_county_dark,
+  path_in_annotation  = NULL,
+  width               = c("focus"=2, "background"=1),
+  base_size           = 18
+)
+
+cat("\n\n### Cog 2<br/><b>Subject-Year</b>\n\n")
+spaghetti_1(
+  d                   = ds,
+  response_variable   = "cog_2",
+  time_variable       = "year",
+  color_variable      = "county",
+  group_variable      = "subject_id",
+  facet_variable      = NULL,
+  palette             = palette_county_dark,
+  path_in_annotation  = NULL,
+  width               = c("focus"=2, "background"=1),
+  base_size           = 18
+)
+
+cat("\n\n### Cog 3<br/><b>Subject-Year</b>\n\n")
+spaghetti_1(
+  d                   = ds,
+  response_variable   = "cog_3",
+  time_variable       = "year",
+  color_variable      = "county",
+  group_variable      = "subject_id",
+  facet_variable      = NULL,
+  palette             = palette_county_dark,
+  path_in_annotation  = NULL,
+  width               = c("focus"=2, "background"=1),
+  base_size           = 18
+)
+
 
 # ---- marginals ---------------------------------------------------------------
 cat("\n\n### Goals Met  <br/><b>Disruptor Measure</b>\n\n")

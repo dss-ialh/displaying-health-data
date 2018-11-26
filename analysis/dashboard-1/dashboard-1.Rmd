@@ -1,5 +1,5 @@
 ---
-title: "Cog vs Phys by County --PDSA Cycle 3"
+title: "Cognitive Longitudinal Outcomes by County --PDSA Cycle 3"
 output:
   flexdashboard::flex_dashboard:
     social: [ "menu" ]
@@ -76,14 +76,14 @@ read_chunk("./analysis/dashboard-1/dashboard-1.R") #This allows knitr to call ch
 Summary
 =============================================
 
-This dashboard helps facilitate the CQI analyses used in the MIECHV 3 project.
+This dashboard helps facilitate the CQI analyses VIHA E.H.R. (early cognitive recline) project.
 
 ## Overall {.tabset data-width=300}
 
 ### Notes
 1. The current report covers `r scales::comma(nrow(ds))` total subject-event records for `r dplyr::n_distinct(ds$county)` unique counties (`r paste(sort(unique(ds$county)), collapse=", ")`).
 1. The year of collection ranges from `r min(ds$year, na.rm=T)` to  `r max(ds$year, na.rm=T)`.
-1. The selected `county_id` is `r county_focus`.
+1. The selected county is `r county_name_focus` (id value `r county_id_focus`).
 
 ## {.tabset}
 ```{r headline-graph, echo=echo_chunks, results='asis', message=message_chunks}
