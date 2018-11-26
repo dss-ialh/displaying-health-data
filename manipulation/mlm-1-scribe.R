@@ -156,7 +156,7 @@ checkmate::assert_numeric(  ds$phys_3          , any.missing=F , lower=0, upper=
 columns_to_write <- c(
   "subject_wave_id", "subject_id", "county_id",
   "gender_id", "race", "ethnicity", "county",
-  "wave_id", "year",
+  "wave_id", "year","date_at_visit",
   "age", "age_cut_4", "age_80_plus",
   "int_factor_1", "slope_factor_1",
   "cog_1", "cog_2", "cog_3",
