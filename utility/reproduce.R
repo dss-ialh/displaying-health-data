@@ -27,10 +27,11 @@ ds_rail  <- tibble::tribble(
 
   # Scribes
   "run_file_r"    , "manipulation/mlm-1-scribe.R",
-  "run_file_r"    , "manipulation/te-scribe.R"
+  "run_file_r"    , "manipulation/te-scribe.R",
 
   # Reports
 
+  "run_rmd"       , "analysis/report-te-1/report-te-1.Rmd"
   # Dashboards
 
 )
@@ -47,13 +48,13 @@ run_file_r <- function( minion ) {
 #   message("Completed `", basename(minion), "`.")
 #   return( TRUE )
 # }
-# run_rmd <- function( minion ) {
-#   message("\nStarting `", basename(minion), "` at ", Sys.time(), ".")
-#   path_out <- rmarkdown::render(minion, envir=new.env())
-#   Sys.sleep(3) # Sleep for three secs, to let pandoc finish
-#   message(path_out)
-#   return( TRUE )
-# }
+run_rmd <- function( minion ) {
+  message("\nStarting `", basename(minion), "` at ", Sys.time(), ".")
+  path_out <- rmarkdown::render(minion, envir=new.env())
+  Sys.sleep(3) # Sleep for three secs, to let pandoc finish
+  message(path_out)
+  return( TRUE )
+}
 
 (file_found <- purrr::map_lgl(ds_rail$path, file.exists))
 if( !all(file_found) ) {

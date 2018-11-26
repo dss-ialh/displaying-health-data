@@ -6,8 +6,9 @@ rm(list=ls(all=TRUE)) #Clear the memory of variables from previous run. This is 
 # source("./SomethingSomething.R")
 
 # ---- load-packages -----------------------------------------------------------
-library(magrittr) #Pipes
-library(ggplot2) #For graphing
+library(magrittr) # Pipes
+library(ggplot2)  # For graphing
+library(lme4)     # For mlms
 requireNamespace("dplyr")
 # requireNamespace("RColorBrewer")
 # requireNamespace("scales") #For formating values in graphs
@@ -16,146 +17,32 @@ requireNamespace("dplyr")
 
 # ---- declare-globals ---------------------------------------------------------
 options(show.signif.stars=F) #Turn off the annotations on p-values
-# config                      <- config::get()
-# path_input                  <- config$path_car_derived
-# Uncomment the lines above and delete the one below if value is stored in 'config.yml'.
-
-path_input <- "./data-public/derived/motor-trend-car-test.rds"
-
-# The two graphing functions are copied from https://github.com/Melinae/TabularManifest.
-histogram_discrete <- function(
-  d_observed,
-  variable_name,
-  levels_to_exclude   = character(0),
-  main_title          = variable_name,
-  x_title             = NULL,
-  y_title             = "Number of Included Records",
-  text_size_percentage= 6,
-  bin_width           = 1L,
-  font_base_size      = 12
-) {
-
-  # Ungroup, in case it comes in grouped.
-  d_observed <-
-    d_observed %>%
-    dplyr::ungroup()
-
-  if( !base::is.factor(d_observed[[variable_name]]) )
-    d_observed[[variable_name]] <- base::factor(d_observed[[variable_name]])
-
-  d_observed$iv <- base::ordered(d_observed[[variable_name]], levels=rev(levels(d_observed[[variable_name]])))
-
-  d_count <- dplyr::count_(d_observed, vars ="iv" )
-  # if( base::length(levels_to_exclude)>0 ) { }
-  d_count <- d_count[!(d_count$iv %in% levels_to_exclude), ]
-
-  d_summary <- d_count %>%
-    dplyr::rename_(
-      "count"    =  "n"
-    ) %>%
-    dplyr::mutate(
-      proportion = count / sum(count)
-    )
-  d_summary$percentage <- base::paste0(base::round(d_summary$proportion*100), "%")
-
-  y_title <- base::paste0(y_title, " (n=", scales::comma(base::sum(d_summary$count)), ")")
-
-  g <-
-    ggplot(d_summary, aes_string(x="iv", y="count", fill="iv", label="percentage")) +
-    geom_bar(stat="identity") +
-    geom_text(stat="identity", size=text_size_percentage, hjust=.8, na.rm=T) +
-    scale_y_continuous(labels=scales::comma_format()) +
-    labs(title=main_title, x=x_title, y=y_title) +
-    coord_flip()
-
-  theme <-
-    theme_light(base_size=font_base_size) +
-    theme(legend.position       =  "none") +
-    theme(panel.grid.major.y    =  element_blank()) +
-    theme(panel.grid.minor.y    =  element_blank()) +
-    theme(axis.text.y           =  element_text(size=font_base_size + 2L)) +
-    theme(axis.text.x           =  element_text(colour="gray40")) +
-    theme(axis.title.x          =  element_text(colour="gray40")) +
-    theme(panel.border          =  element_rect(colour="gray80")) +
-    theme(axis.ticks            =  element_blank())
-
-  return( g + theme )
-}
-histogram_continuous <- function(
-  d_observed,
-  variable_name,
-  bin_width               = NULL,
-  main_title              = base::gsub("_", " ", variable_name, perl=TRUE),
-  x_title                 = paste0(variable_name, "\n(each bin is ", scales::comma(bin_width), " units wide)"),
-  y_title                 = "Frequency",
-  rounded_digits          = 0L,
-  font_base_size          = 12
-) {
-
-  if( !inherits(d_observed, "data.frame") )
-    stop("`d_observed` should inherit from the data.frame class.")
-
-  d_observed <- tidyr::drop_na_(d_observed, variable_name)
-
-  ds_mid_points               <- base::data.frame(label=c("italic(X)[50]", "bar(italic(X))"), stringsAsFactors=FALSE)
-  ds_mid_points$value         <- c(stats::median(d_observed[[variable_name]]), base::mean(d_observed[[variable_name]]))
-  ds_mid_points$value_rounded <- base::round(ds_mid_points$value, rounded_digits)
-
-  if( ds_mid_points$value[1] < ds_mid_points$value[2] ) {
-    h_just <- c(1.1, -0.1)
-  } else {
-    h_just <- c(-0.1, 1.1)
-  }
-
-  g <-
-    d_observed %>%
-    ggplot2::ggplot(ggplot2::aes_string(x=variable_name)) +
-    ggplot2::geom_histogram(binwidth=bin_width, position=ggplot2::position_identity(), fill="gray70", color="gray90", alpha=.7) +
-    ggplot2::geom_vline(xintercept=ds_mid_points$value, color="gray30") +
-    ggplot2::geom_text(data=ds_mid_points, ggplot2::aes_string(x="value", y=0, label="value_rounded"), color="tomato", hjust=h_just, vjust=.5, na.rm=T) +
-    ggplot2::scale_x_continuous(labels=scales::comma_format()) +
-    ggplot2::scale_y_continuous(labels=scales::comma_format()) +
-    ggplot2::labs(title=main_title, x=x_title, y=y_title)
-
-  g <- g +
-    ggplot2::theme_light(base_size = font_base_size) +
-    ggplot2::theme(axis.ticks             = ggplot2::element_blank())
-
-  g <- g + ggplot2::geom_text(data=ds_mid_points, ggplot2::aes_string(x="value", y=Inf, label="label"), color="tomato", hjust=h_just, vjust=2, parse=TRUE)
-  return( g )
-}
+config                      <- config::get()
 
 # ---- load-data ---------------------------------------------------------------
-ds <- readr::read_rds(path_input) # 'ds' stands for 'datasets'
+ds_county       <- readr::read_rds(config$path_te_county)
+ds_county_month <- readr::read_rds(config$path_te_county_month)
 
 # ---- tweak-data --------------------------------------------------------------
-ds <-
-  ds %>%
-  dplyr::mutate(
-    # Create duplicates of variables as factors (not numbers), which can help with later graphs or analyses.
-    #   Admittedly, the labels are a contrived example of a factor, but helps the demo later.
-    forward_gear_count_f  = factor(forward_gear_count, levels=3:5, labels=c("Three", "Four", "Five")),
-    carburetor_count_f    = factor(carburetor_count),
 
-    ### Create transformations and interactions to help later graphs and models.
-    horsepower_by_gear_count_3  = horsepower * (forward_gear_count=="three"),
-    horsepower_by_gear_count_4  = horsepower * (forward_gear_count=="four" )
-  )
+# ---- marginals-county ---------------------------------------------------------------
+TabularManifest::histogram_discrete(d_observed=ds_county, variable_name="county")
+TabularManifest::histogram_continuous(d_observed=ds_county, variable_name="fte", bin_width=1, rounded_digits = 1)
+TabularManifest::histogram_continuous(d_observed=ds_county, variable_name="cog_1_count", bin_width=1, rounded_digits = 1)
+TabularManifest::histogram_continuous(d_observed=ds_county, variable_name="cog_1", bin_width=.5, rounded_digits=2)
+TabularManifest::histogram_continuous(d_observed=ds_county, variable_name="cog_2", bin_width=.5, rounded_digits=2)
+TabularManifest::histogram_continuous(d_observed=ds_county, variable_name="cog_3", bin_width=.5, rounded_digits=2)
+TabularManifest::histogram_continuous(d_observed=ds_county, variable_name="phys_1", bin_width=.5, rounded_digits=2)
+TabularManifest::histogram_continuous(d_observed=ds_county, variable_name="phys_2", bin_width=.5, rounded_digits=2)
+TabularManifest::histogram_continuous(d_observed=ds_county, variable_name="phys_3", bin_width=.5, rounded_digits=2)
 
-checkmate::assert_factor(   ds$forward_gear_count_f         , any.missing=F                           )
-checkmate::assert_factor(   ds$carburetor_count_f           , any.missing=F                           )
-checkmate::assert_numeric(  ds$horsepower_by_gear_count_3   , any.missing=F , lower=   0, upper=   0  )
-checkmate::assert_numeric(  ds$horsepower_by_gear_count_4   , any.missing=F , lower=   0, upper=   0  )
+# ---- marginals-county-month ---------------------------------------------------------------
+ggplot(ds_county_month, aes(x=month)) +
+  geom_histogram(binwidth = 365.25/12, color="gray60", fill="#88888833") +
+  theme_light()
 
-# ---- marginals ---------------------------------------------------------------
-# Inspect continuous variables
-histogram_continuous(d_observed=ds, variable_name="quarter_mile_sec", bin_width=.5, rounded_digits=1)
-# slightly better function: TabularManifest::histogram_continuous(d_observed=ds, variable_name="quarter_mile_sec", bin_width=.5, rounded_digits=1)
-histogram_continuous(d_observed=ds, variable_name="displacement_inches_cubed", bin_width=50, rounded_digits=1)
-
-# Inspect discrete/categorical variables
-histogram_discrete(d_observed=ds, variable_name="carburetor_count_f")
-histogram_discrete(d_observed=ds, variable_name="forward_gear_count_f")
+TabularManifest::histogram_continuous(d_observed=ds_county_month, variable_name="fte", bin_width=.5, rounded_digits = 1)
+TabularManifest::histogram_discrete(d_observed=ds_county_month, variable_name="fte_approximated")
 
 # This helps start the code for graphing each variable.
 #   - Make sure you change it to `histogram_continuous()` for the appropriate variables.
@@ -166,45 +53,49 @@ histogram_discrete(d_observed=ds, variable_name="forward_gear_count_f")
 # }
 
 # ---- scatterplots ------------------------------------------------------------
-g1 <-
-  ggplot(ds, aes(x=horsepower, y=quarter_mile_sec, color=forward_gear_count_f)) +
-  geom_smooth(method="loess", span=2) +
-  geom_point(shape=1) +
+
+# Graph each county-month
+ggplot(ds_county_month, aes(x=month, y=fte, group=factor(county_id), color=factor(county_id), shape=fte_approximated, ymin=0)) +
+  geom_point(position=position_jitter(height=.05, width=5), size=4, na.rm=T) +
+  # geom_text(aes(label=county_month_id)) +
+  geom_line(position=position_jitter(height=.1, width=5)) +
+  scale_shape_manual(values=c("TRUE"=21, "FALSE"=NA)) +
   theme_light() +
-  theme(axis.ticks = element_blank())
-g1
+  guides(color = guide_legend(ncol=4, override.aes = list(size=3, alpha = 1))) +
+  guides(shape = guide_legend(ncol=2, override.aes = list(size=3, alpha = 1))) +
+  labs(title="FTE sum each month (by county)", y="Sum of FTE for County")
 
-g1 %+% aes(color=cylinder_count)
-g1 %+% aes(color=factor(cylinder_count))
+last_plot() +
+  coord_cartesian(ylim=c(0, 5)) +
+  theme(legend.position = "none")
+  labs(title="Zoomed: FTE sum each month (by county)", y="Sum of FTE for County")
 
-ggplot2::qplot(ds$weight_gear_z, color=ds$forward_gear_count_f, geom="density")  # mean(ds$weight_gear_z, na.rm=T)
-
-ggplot(ds, aes(x=weight_gear_z, color=forward_gear_count_f, fill=forward_gear_count_f)) +
-  geom_density(alpha=.1) +
-  theme_minimal() +
-  labs(x=expression(z[gear]))
 
 # ---- models ------------------------------------------------------------------
 cat("============= Simple model that's just an intercept. =============")
-m0 <- lm(quarter_mile_sec ~ 1, data=ds)
+m0 <- lm(fte ~ 1, data=ds_county_month)
 summary(m0)
 
-cat("============= Model includes one predictor. =============")
-m1 <- lm(quarter_mile_sec ~ 1 + miles_per_gallon, data=ds)
+cat("============= Model includes one predictor (ie, month). =============")
+m1 <- lm(fte ~ 1 + month, data=ds_county_month)
 summary(m1)
 
-cat("The one predictor is significantly tighter.")
+cat("The one predictor is NOT significantly tighter.")
 anova(m0, m1)
 
-cat("============= Model includes two predictors. =============")
-m2 <- lm(quarter_mile_sec ~ 1 + miles_per_gallon + forward_gear_count_f, data=ds)
+cat("============= MLM for county. =============")
+m2 <- lmer(fte ~ 1 + (1 | county), data=ds_county_month)
 summary(m2)
 
-cat("The two predictor is significantly tighter.")
-anova(m1, m2)
+cat("============= MLM adds month. =============")
+m3 <- lmer(fte ~ 1 + month + (1 | county), data=ds_county_month)
+summary(m3)
+
+cat("Including the Month predictor in the MLM is significantly tighter.")
+anova(m2, m3)
 
 # ---- model-results-table  -----------------------------------------------
-summary(m2)$coef %>%
+summary(m3)$coef %>%
   knitr::kable(
     digits      = 2,
     format      = "markdown"

@@ -25,6 +25,7 @@ Imports:
     readr (>= 1.2.1),
     rmarkdown,
     sessioninfo,
+    TabularManifest,
     tibble (>= 1.4.0)
 Suggests:
     devtools (>= 1.13.0),
