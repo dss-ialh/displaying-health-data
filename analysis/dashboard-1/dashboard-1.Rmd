@@ -81,10 +81,9 @@ This dashboard helps facilitate the CQI analyses used in the MIECHV 3 project.
 ## Overall {.tabset data-width=300}
 
 ### Notes
-1. The current report covers `r scales::comma(nrow(ds_provider_week))` total monthly records for `r dplyr::n_distinct(ds_provider_week$program_code[ds_provider_week$program_code == 755])` unique programs and `r dplyr::n_distinct(ds_provider_week$model_name)` unique models (`r paste(sort(unique(ds_provider_week$model_name)), collapse=", ")`).
-1. The dates range from `r min(ds_provider_week$week, na.rm=T)` to  `r max(ds_provider_week$week, na.rm=T)`.
-1. The selected program is `r program_focus`.
-1. The PDSA Cycle 3 start date is `r as.Date("2018-08-01")`
+1. The current report covers `r scales::comma(nrow(ds))` total subject-event records for `r dplyr::n_distinct(ds$county)` unique counties (`r paste(sort(unique(ds$county)), collapse=", ")`).
+1. The year of collection ranges from `r min(ds$year, na.rm=T)` to  `r max(ds$year, na.rm=T)`.
+1. The selected `county_id` is `r county_focus`.
 
 ## {.tabset}
 ```{r headline-graph, echo=echo_chunks, results='asis', message=message_chunks}
@@ -188,20 +187,20 @@ By implementing plans for self-care activities with established clients, primary
 
 ### Explanation -All CQI Dashboards
 
-```{r, child = "../../common/dashboard/documentation-all-dashboards-1.Rmd"}
+```{r, child = "../common/dashboard/documentation-all-dashboards-1.Rmd"}
 ```
 
 ### Glossary
 
-```{r, child = "../../common/dashboard/documentation-glossary-1.Rmd"}
+```{r, child = "../common/dashboard/documentation-glossary-1.Rmd"}
 ```
 
 ### Tips
 
-```{r, child = "../../common/dashboard/documentation-tips-1.Rmd"}
+```{r, child = "../common/dashboard/documentation-tips-1.Rmd"}
 ```
 
 ### Config
 
-```{r, child = "../../common/dashboard/documentation-config-1.Rmd"}
+```{r, child = "../common/dashboard/documentation-config-1.Rmd"}
 ```

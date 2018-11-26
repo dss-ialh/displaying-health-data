@@ -108,11 +108,10 @@ ds_county  %>%
 
 # ---- spaghetti --------------------------------------------
 
-
-cat("\n\n###Mean PSS Scores - Pre<br/><b>Outcome</b>\n\n")#Post will be added
+cat("\n\n###Cog 1<br/><b>Manifest</b>\n\n")#Post will be added
 # names(ds_client_week)
 ds_county_year %>%
-  # dplyr::group_by(week)%>%
+  dplyr::group_by(county)%>%
   # dplyr::mutate(
   #   mean_pre = mean(stress_score_pre, na.rm=T),
   #   count    = length(which(!is.na(stress_score_pre)))
@@ -121,70 +120,43 @@ ds_county_year %>%
   plot_ly(
     x = ~year,
     y = ~cog_1_mean,
-    type = 'markers',
-  #   text = ~paste(
-  #     "<br>Mean Cog 1 Score ",
-  #     cog_1_mean,
-  #     "<br>County ",
-  #     county
-  #   ),
+    type = 'scatter',
+    mode = "markers+lines",
+    text = ~paste(
+      "<br>Mean Cog 1 Score: ",
+      round(cog_1_mean, 3),
+      "<br>County: ",
+      county
+    ),
     name = "Mean Scores"
-  ) #%>%
-  # dplyr::ungroup()%>%
-  # dplyr::group_by(county)%>%
-  # add_trace(
-  #   x    = ~year,
-  #   y    = ~cog_1_mean,
-  #   type = 'lines'#,
-  #   # mode = 'markers',
-  #   # # line = list(color = colors[4]),
-  #   # text = ~paste(
-  #   #   "<br>Mean Cog 1 Score ",
-  #   #   cog_1_mean,
-  #   #   "<br>County ",
-  #   #   county
-  #   # ),
-  #   # size = ~count,
-  #   # name = "Mean Scores"
-  # )
-# %>%
-#   layout(
-#     title = "Pre scores on PSS",
-#     xaxis = list(title=""),
-#     yaxis = list(
-#       title = "PSS Score",
-#       titlefont = list(
-#         family = "Courier New, monospace",
-#         size = 18,
-#         color = "#7f7f7f")))
-#     #,
-  #   shapes=list(
-  #     list(type='line', x0= as.Date("2017-07-15"), x1= as.Date("2017-07-15"),
-  #          y0=0, y1=22, line=list(dash='line', width=.5)),
-  #     list(type='line', x0= as.Date("2018-01-15"), x1= as.Date("2018-01-15"),
-  #          y0=0, y1=22, line=list(dash='line', width=.5)),
-  #     list(type='line', x0= as.Date("2018-02-15"), x1= as.Date("2018-02-15"),
-  #          y0=0, y1=22, line=list(dash='line', width=.5)))
-  # )%>%
-  # add_annotations(
-  #   x=as.Date("2017-07-15")+5,  y=0.25,  showarrow = FALSE,
-  #   text="1st Learning Session",
-  #   textangle = 90,  opacity = 0.5,
-  #   font = list(size = 10,color = "grey")
-  # )%>%
-  # add_annotations(
-  #   x=as.Date("2018-01-15")+5,  y=0.25,  showarrow = FALSE,
-  #   text="2nd Learning Session",
-  #   textangle = 90, opacity = 0.5,
-  #   font = list(size = 10, color = "grey"
-  #   )
-  # )%>%
-  # add_annotations(
-  #   x=as.Date("2018-02-15")+5, y=0.25,   showarrow = FALSE,
-  #   text="PAT Bethany Cycle 2 Start", textangle = 90, opacity = 0.5,
-  #   font = list(size = 10,color = "grey")
-  # )
-
+  ) %>%
+  # add_trace(type = "scatter", mode = "markers+lines")
+  dplyr::ungroup() %>%
+  layout(
+    # title = "Cog 1",
+    xaxis = list(title=NA),
+    yaxis = list(
+      title = "Cog 1",
+      titlefont = list(
+        family = "Courier New, monospace",
+        size = 18,
+        color = "#7f7f7f")
+    ),
+    shapes=list(
+      # list(
+      #   type='line', x0= as.Date("2017-07-15"), x1= as.Date("2017-07-15"),
+      #   y0=0, y1=22, line=list(dash='line', width=.5)
+      # ),
+      # list(
+      #   type='line', x0= as.Date("2018-01-15"), x1= as.Date("2018-01-15"),
+      #   y0=0, y1=22, line=list(dash='line', width=.5)
+      # ),
+      # list(
+      #   type='line', x0= as.Date("2002-02-15"), x1= as.Date("2002-02-15"),
+      #   y0=0, y1=5, line=list(dash='line', width=.5)
+      # )
+    )
+  )
 
 
 cat("\n\n###Stress Activity - Success<br/><b>Process</b>\n

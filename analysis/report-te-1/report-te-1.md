@@ -286,7 +286,6 @@ For the sake of documentation and reproducibility, the current report was render
  digest            0.6.18      2018-10-10 [1]
  dplyr             0.7.8       2018-11-10 [1]
  evaluate          0.12        2018-10-09 [1]
- fansi             0.4.0       2018-10-05 [1]
  fs                1.2.6       2018-08-23 [1]
  ggplot2         * 3.1.0       2018-10-25 [1]
  glue              1.3.0       2018-07-17 [1]
@@ -328,7 +327,6 @@ For the sake of documentation and reproducibility, the current report was render
  rlang             0.3.0.1     2018-10-25 [1]
  rmarkdown         1.10        2018-06-11 [1]
  rprojroot         1.3-2       2018-01-03 [1]
- rsconnect         0.8.11      2018-11-12 [1]
  RSQLite           2.1.1       2018-05-06 [1]
  rstudioapi        0.8         2018-10-02 [1]
  scales            1.0.0       2018-08-09 [1]
@@ -342,7 +340,6 @@ For the sake of documentation and reproducibility, the current report was render
  tidyr             0.8.2       2018-10-28 [1]
  tidyselect        0.2.5       2018-10-11 [1]
  usethis           1.4.0       2018-08-14 [1]
- utf8              1.1.4       2018-05-24 [1]
  viridisLite       0.3.0       2018-02-01 [1]
  withr             2.1.2       2018-03-15 [1]
  yaml              2.2.0       2018-07-25 [1]
@@ -358,7 +355,6 @@ For the sake of documentation and reproducibility, the current report was render
  CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
  Github (mllg/checkmate@5d3bf37)         
- CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
@@ -416,10 +412,8 @@ For the sake of documentation and reproducibility, the current report was render
  CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
- CRAN (R 3.5.1)                          
  Github (Melinae/TabularManifest@4cbc21c)
  Github (yihui/testit@219f6f4)           
- CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
@@ -439,4 +433,4 @@ For the sake of documentation and reproducibility, the current report was render
 
 
 
-Report rendered by wibeasley at 2018-11-25, 16:03 -0800 in 15 seconds.
+Report rendered by wibeasley at 2018-11-25, 17:27 -0800 in 19 seconds.
