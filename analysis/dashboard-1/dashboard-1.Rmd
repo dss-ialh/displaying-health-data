@@ -98,13 +98,13 @@ Tables
 
 
 
-### Tables - Client-week
-```{r tables-client-week, echo=echo_chunks, message=message_chunks}
+### Tables - County-Year
+```{r tables-county-year, echo=echo_chunks, message=message_chunks}
 ```
 
-### Tables - Provider-Week
+### Tables - County
 
-```{r tables-provider-week, echo=echo_chunks, message=message_chunks}
+```{r tables-county, echo=echo_chunks, message=message_chunks}
 ```
 
 
@@ -181,7 +181,7 @@ By implementing plans for self-care activities with established clients, primary
 
 #### Resources
 
-* [Current PDSA]https://docs.google.com/document/d/1IcwCCkr1EkoeBJpEKdF2v-E0gKI6wGacCv9oZU1CE7I/edit#
+* [Current PDSA](https://docs.google.com/document/d/1IcwCCkr1EkoeBJpEKdF2v-E0gKI6wGacCv9oZU1CE7I/edit#)
 
 <!-- The dashboard documentation that's common to all reports. Unfortunately, the working directory is the Rmd directory, to the repo root. -->
 

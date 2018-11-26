@@ -82,7 +82,7 @@ spaghetti_1 <- function(
   g <- g + geom_line(aes_string(group=group_variable, alpha=alpha_variable), stat="identity",  na.rm=TRUE) +
     geom_point(aes_string(group=group_variable, alpha=alpha_variable), size=point_size, stat="identity", shape=1,  na.rm=TRUE) +
     scale_y_continuous(labels=y_label_format) +
-    scale_alpha_manual(values=c("focus"=1, "background"=.15))
+    scale_alpha_manual(values=c("focus"=1, "background"=.5))
     # scale_alpha_manual(values=c("focus"=.5, "background"=.5))
   if( !is.null(path_in_annotation) ) {
     d_annotation <- readr::read_csv(path_in_annotation, col_types=col_types_annotation(), comment="#")
@@ -101,8 +101,12 @@ spaghetti_1 <- function(
   if( !is.null(facet_variable) )
     g <- g + facet_wrap(facet_variable,  scales="free_y")
 
-  g <- g + guides(color="none") +
-    package_theme(base_size) +
+  g <- g +
+    guides(color="none") +
+    guides(alpha="none") +
+    guides(size="none") +
+    # package_theme(base_size) +
+    theme_minimal(base_size) +
     labs(title=main_title, x=x_title, y=y_title, subtitle=sub_title)
 
   return( g )
