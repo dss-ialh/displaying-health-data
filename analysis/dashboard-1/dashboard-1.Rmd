@@ -1,5 +1,5 @@
 ---
-title: "Cog vs Phys by County --PDSA Cycle 3"
+title: "Cognitive Longitudinal Outcomes by County --PDSA Cycle 3"
 output:
   flexdashboard::flex_dashboard:
     social: [ "menu" ]
@@ -76,15 +76,14 @@ read_chunk("./analysis/dashboard-1/dashboard-1.R") #This allows knitr to call ch
 Summary
 =============================================
 
-This dashboard helps facilitate the CQI analyses used in the MIECHV 3 project.
+This dashboard helps facilitate the CQI analyses VIHA E.H.R. (early cognitive recline) project.
 
 ## Overall {.tabset data-width=300}
 
 ### Notes
-1. The current report covers `r scales::comma(nrow(ds_provider_week))` total monthly records for `r dplyr::n_distinct(ds_provider_week$program_code[ds_provider_week$program_code == 755])` unique programs and `r dplyr::n_distinct(ds_provider_week$model_name)` unique models (`r paste(sort(unique(ds_provider_week$model_name)), collapse=", ")`).
-1. The dates range from `r min(ds_provider_week$week, na.rm=T)` to  `r max(ds_provider_week$week, na.rm=T)`.
-1. The selected program is `r program_focus`.
-1. The PDSA Cycle 3 start date is `r as.Date("2018-08-01")`
+1. The current report covers `r scales::comma(nrow(ds))` total subject-event records for `r dplyr::n_distinct(ds$county)` unique counties (`r paste(sort(unique(ds$county)), collapse=", ")`).
+1. The year of collection ranges from `r min(ds$year, na.rm=T)` to  `r max(ds$year, na.rm=T)`.
+1. The selected county is `r county_name_focus` (id value `r county_id_focus`).
 
 ## {.tabset}
 ```{r headline-graph, echo=echo_chunks, results='asis', message=message_chunks}
@@ -99,13 +98,13 @@ Tables
 
 
 
-### Tables - Client-week
-```{r tables-client-week, echo=echo_chunks, message=message_chunks}
+### Tables - County-Year
+```{r tables-county-year, echo=echo_chunks, message=message_chunks}
 ```
 
-### Tables - Provider-Week
+### Tables - County
 
-```{r tables-provider-week, echo=echo_chunks, message=message_chunks}
+```{r tables-county, echo=echo_chunks, message=message_chunks}
 ```
 
 
@@ -126,21 +125,14 @@ Spaghetti
 ```
 
 
-<!-- Additional Graphs -->
-<!-- ============================================= -->
+Marginals
+=============================================
+
+## {.tabset}
 
 
-<!-- ## {.tabset} -->
-
-
-<!-- ```{r marginals, echo=echo_chunks, message=message_chunks, results='asis'} -->
-
-<!-- ``` -->
-
-
-
-
-
+```{r marginals, echo=echo_chunks, message=message_chunks, results='asis'} 
+```
 
 Documentation
 =============================================
@@ -182,26 +174,26 @@ By implementing plans for self-care activities with established clients, primary
 
 #### Resources
 
-* [Current PDSA]https://docs.google.com/document/d/1IcwCCkr1EkoeBJpEKdF2v-E0gKI6wGacCv9oZU1CE7I/edit#
+* [Current PDSA](https://docs.google.com/document/d/1IcwCCkr1EkoeBJpEKdF2v-E0gKI6wGacCv9oZU1CE7I/edit#)
 
 <!-- The dashboard documentation that's common to all reports. Unfortunately, the working directory is the Rmd directory, to the repo root. -->
 
 ### Explanation -All CQI Dashboards
 
-```{r, child = "../../common/dashboard/documentation-all-dashboards-1.Rmd"}
+```{r, child = "../common/dashboard/documentation-all-dashboards-1.Rmd"}
 ```
 
 ### Glossary
 
-```{r, child = "../../common/dashboard/documentation-glossary-1.Rmd"}
+```{r, child = "../common/dashboard/documentation-glossary-1.Rmd"}
 ```
 
 ### Tips
 
-```{r, child = "../../common/dashboard/documentation-tips-1.Rmd"}
+```{r, child = "../common/dashboard/documentation-tips-1.Rmd"}
 ```
 
 ### Config
 
-```{r, child = "../../common/dashboard/documentation-config-1.Rmd"}
+```{r, child = "../common/dashboard/documentation-config-1.Rmd"}
 ```

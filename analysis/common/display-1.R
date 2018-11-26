@@ -14,7 +14,8 @@ repo_theme <- function( base_size = 8 ) {
 }
 col_types_annotation <- function() {
   readr::cols_only(
-    date           = readr::col_date(format = ""),
+    # date           = readr::col_date(format = ""),
+    date           = readr::col_integer(),
     title          = readr::col_character(),
     description    = readr::col_character(),
     color          = readr::col_character()
@@ -82,13 +83,13 @@ spaghetti_1 <- function(
   g <- g + geom_line(aes_string(group=group_variable, alpha=alpha_variable), stat="identity",  na.rm=TRUE) +
     geom_point(aes_string(group=group_variable, alpha=alpha_variable), size=point_size, stat="identity", shape=1,  na.rm=TRUE) +
     scale_y_continuous(labels=y_label_format) +
-    scale_alpha_manual(values=c("focus"=1, "background"=.15))
+    scale_alpha_manual(values=c("focus"=1, "background"=.5))
     # scale_alpha_manual(values=c("focus"=.5, "background"=.5))
   if( !is.null(path_in_annotation) ) {
     d_annotation <- readr::read_csv(path_in_annotation, col_types=col_types_annotation(), comment="#")
 
     g <- g + geom_vline(data=d_annotation, aes(xintercept=as.numeric(date)), size=.25, color="gray45") +
-      geom_text(data=d_annotation, aes(x=date, y=0, label=title), angle=90, vjust=0, hjust=0, size=3, color="gray45")
+      geom_text(data=d_annotation, aes(x=date, y=-Inf, label=title), angle=90, vjust=0, hjust=0, size=3, color="gray45")
   }
 
   if( !is.null(width) )
@@ -101,8 +102,12 @@ spaghetti_1 <- function(
   if( !is.null(facet_variable) )
     g <- g + facet_wrap(facet_variable,  scales="free_y")
 
-  g <- g + guides(color="none") +
-    package_theme(base_size) +
+  g <- g +
+    guides(color="none") +
+    guides(alpha="none") +
+    guides(size="none") +
+    # package_theme(base_size) +
+    theme_minimal(base_size) +
     labs(title=main_title, x=x_title, y=y_title, subtitle=sub_title)
 
   return( g )

@@ -14,4 +14,4 @@ default:
     path_te_county:             "data-public/derived/te/te-county.rds"
     path_te_county_month:       "data-public/derived/te/te-county-month.rds"
 
-    path_annotation:        "data-public/raw/cqi-annotation.csv"
+    path_annotation:        "data-public/metadata/cqi-annotation.csv"
