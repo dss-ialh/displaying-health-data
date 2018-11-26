@@ -30,7 +30,7 @@ sql_event <-
       s.gender_id,
       s.race,
       s.ethnicity,
-      luc.county_name,
+      luc.county_name             AS county,
       m.wave_id,
       m.year,
       m.age,
@@ -79,7 +79,7 @@ dim(ds)
 # ---- collapse-to-county ------------------------------------------------------
 ds_county <-
   ds %>%
-  dplyr::group_by(county_id, county_name) %>%
+  dplyr::group_by(county_id, county) %>%
   dplyr::summarize(
     cog_1_mean      = mean(cog_1    , na.rm=T),
     cog_2_mean      = mean(cog_2    , na.rm=T),
@@ -93,7 +93,7 @@ ds_county <-
 # ---- collapse-to-county-year ------------------------------------------------------
 ds_county_year <-
   ds %>%
-  dplyr::group_by(county_id, county_name, year) %>%
+  dplyr::group_by(county_id, county, year) %>%
   dplyr::summarize(
     cog_1_mean      = mean(cog_1    , na.rm=T),
     cog_2_mean      = mean(cog_2    , na.rm=T),
@@ -132,7 +132,7 @@ ds %>%
 checkmate::assert_integer(  ds$subject_wave_id , any.missing=F , lower=1, upper=200   , unique=T)
 checkmate::assert_integer(  ds$subject_id      , any.missing=F , lower=1001, upper=1200 )
 checkmate::assert_integer(  ds$county_id       , any.missing=F , lower=51, upper=72     )
-checkmate::assert_character(ds$county_name     , any.missing=F , pattern="^.{5,8}$"     )
+checkmate::assert_character(ds$county          , any.missing=F , pattern="^.{5,8}$"     )
 checkmate::assert_integer(  ds$wave_id         , any.missing=F , lower=1, upper=10      )
 checkmate::assert_integer(  ds$year            , any.missing=F , lower=2000, upper=2014 )
 checkmate::assert_integer(  ds$age             , any.missing=F , lower=55, upper=84     )
@@ -147,7 +147,27 @@ checkmate::assert_numeric(  ds$phys_1          , any.missing=F , lower=1, upper=
 checkmate::assert_numeric(  ds$phys_2          , any.missing=F , lower=2, upper=7       )
 checkmate::assert_numeric(  ds$phys_3          , any.missing=F , lower=0, upper=3       )
 
+# ---- specify-columns-to-upload -----------------------------------------------
+# dput(colnames(ds)) # Print colnames for line below.
+columns_to_write <- c(
+  "subject_wave_id", "subject_id", "county_id",
+  "gender_id", "race", "ethnicity", "county",
+  "wave_id", "year",
+  "age", "age_cut_4", "age_80_plus",
+  "int_factor_1", "slope_factor_1",
+  "cog_1", "cog_2", "cog_3",
+  "phys_1", "phys_2", "phys_3"
+)
+ds_slim <-
+  ds %>%
+  dplyr::select(!!columns_to_write) %>%
+  # dplyr::slice(1:100) %>%
+  dplyr::mutate_if(is.logical, as.integer)       # Some databases & drivers need 0/1 instead of FALSE/TRUE.
+ds_slim
+
+rm(columns_to_write)
+
 # ---- save-to-disk ------------------------------------------------------------
 readr::write_rds(ds_county        , config$path_county_derived          , compress="gz")
 readr::write_rds(ds_county_year   , config$path_county_year_derived     , compress="gz")
-readr::write_rds(ds               , config$path_mlm_1_derived           , compress="gz")
+readr::write_rds(ds_slim          , config$path_mlm_1_derived           , compress="gz")
