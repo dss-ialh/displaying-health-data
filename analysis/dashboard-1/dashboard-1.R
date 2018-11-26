@@ -24,7 +24,7 @@ county_id_focus           <- 72L
 base_size                 <- 14L
 
 
-# path_in_annotation      <- "./data-public/raw/programs/cqi-annotation-example.csv"
+path_in_annotation      <- config$path_annotation
 # colors <- c('#0000ff','#ff8000','#ffff99',   '#ff0000' )
 palette_county_dark   <- c("Muskogee"="#b0d794"  , "Oklahoma"="#83c1b2"  ,  "Tulsa"="#f4a971"  ) #http://colrd.com/image-dna/28023/
 palette_county_light  <- c("Muskogee"="#b0d79433", "Oklahoma"="#83c1b233",  "Tulsa"="#f4a97133")
@@ -34,7 +34,7 @@ ds                <- readr::read_rds(config$path_mlm_1_derived)
 ds_county         <- readr::read_rds(config$path_county_derived)
 ds_county_year    <- readr::read_rds(config$path_county_year_derived)
 
-# ds_annotation       <- read.csv(config$path_annotation)
+ds_annotation       <- read.csv(path_in_annotation)
 
 # ---- tweak-data --------------------------------------------------------------
 ds <-
@@ -127,13 +127,13 @@ ds_county  %>%
   )
 
 # ---- tables-annotation ----------------------------------------------------------
-# ds_annotation %>%
-#   DT::datatable(
-#     colnames=gsub("_", " ", colnames(.)),
-#     options = list(
-#       pageLength = 16
-#     )
-#   )
+ds_annotation %>%
+  DT::datatable(
+    colnames=gsub("_", " ", colnames(.)),
+    options = list(
+      pageLength = 16
+    )
+  )
 
 
 # ---- spaghetti --------------------------------------------
@@ -181,7 +181,7 @@ spaghetti_1(
   group_variable      = "county",
   facet_variable      = NULL,
   palette             = palette_county_dark,
-  path_in_annotation  = NULL,
+  path_in_annotation  = path_in_annotation,
   width               = c("focus"=2, "background"=1),
   base_size           = 18
 )
@@ -245,5 +245,25 @@ spaghetti_1(
 
 
 # ---- marginals ---------------------------------------------------------------
-cat("\n\n### Goals Met  <br/><b>Disruptor Measure</b>\n\n")
-#
+histogram_2(
+  d_observed      = ds,
+  variable_name   = "cog_1",
+  bin_width       = .5,
+  rounded_digits  = 1,
+  main_title      = NULL,
+  tab_title     = "\n\n### <b>Cog 1</b><br/>Collapsing Subject-Year\n\n"
+)
+histogram_2(
+  d_observed    = ds,
+  variable_name = "cog_2",
+  bin_width     = 1,
+  main_title    = NULL,
+  tab_title     = "\n\n### <b>Cog 2</b><br/>Collapsing Subject-Year\n\n"
+)
+histogram_2(
+  d_observed    = ds,
+  variable_name = "cog_3",
+  bin_width     = 1,
+  main_title    = NULL,
+  tab_title     = "\n\n### <b>Cog 3</b><br/>Collapsing Subject-Year\n\n"
+)

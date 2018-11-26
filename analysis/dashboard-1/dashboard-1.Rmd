@@ -125,21 +125,14 @@ Spaghetti
 ```
 
 
-<!-- Additional Graphs -->
-<!-- ============================================= -->
+Marginals
+=============================================
+
+## {.tabset}
 
 
-<!-- ## {.tabset} -->
-
-
-<!-- ```{r marginals, echo=echo_chunks, message=message_chunks, results='asis'} -->
-
-<!-- ``` -->
-
-
-
-
-
+```{r marginals, echo=echo_chunks, message=message_chunks, results='asis'} 
+```
 
 Documentation
 =============================================

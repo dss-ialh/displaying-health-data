@@ -309,7 +309,6 @@ For the sake of documentation and reproducibility, the current report was render
  nloptr            1.2.1       2018-10-03 [1]
  odbc              1.1.6       2018-06-09 [1]
  OuhscMunge        0.1.9.9009  2018-10-30 [1]
- packrat           0.5.0       2018-11-14 [1]
  pillar            1.3.0       2018-07-14 [1]
  pkgbuild          1.0.2       2018-10-16 [1]
  pkgconfig         2.0.2       2018-08-16 [1]
@@ -411,7 +410,6 @@ For the sake of documentation and reproducibility, the current report was render
  CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
  CRAN (R 3.5.1)                          
- CRAN (R 3.5.1)                          
  Github (Melinae/TabularManifest@4cbc21c)
  Github (yihui/testit@219f6f4)           
  CRAN (R 3.5.1)                          
@@ -433,4 +431,4 @@ For the sake of documentation and reproducibility, the current report was render
 
 
 
-Report rendered by wibeasley at 2018-11-25, 17:27 -0800 in 19 seconds.
+Report rendered by wibeasley at 2018-11-25, 18:37 -0800 in 18 seconds.

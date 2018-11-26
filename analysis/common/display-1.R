@@ -14,7 +14,8 @@ repo_theme <- function( base_size = 8 ) {
 }
 col_types_annotation <- function() {
   readr::cols_only(
-    date           = readr::col_date(format = ""),
+    # date           = readr::col_date(format = ""),
+    date           = readr::col_integer(),
     title          = readr::col_character(),
     description    = readr::col_character(),
     color          = readr::col_character()
@@ -88,7 +89,7 @@ spaghetti_1 <- function(
     d_annotation <- readr::read_csv(path_in_annotation, col_types=col_types_annotation(), comment="#")
 
     g <- g + geom_vline(data=d_annotation, aes(xintercept=as.numeric(date)), size=.25, color="gray45") +
-      geom_text(data=d_annotation, aes(x=date, y=0, label=title), angle=90, vjust=0, hjust=0, size=3, color="gray45")
+      geom_text(data=d_annotation, aes(x=date, y=-Inf, label=title), angle=90, vjust=0, hjust=0, size=3, color="gray45")
   }
 
   if( !is.null(width) )
