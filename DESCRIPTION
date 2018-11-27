@@ -29,7 +29,6 @@ Imports:
     methods,
     odbc (>= 1.1.1),
     OuhscMunge (>= 0.1.9.9009),
-    purrr,
     RColorBrewer,
     readr (>= 1.2.1),
     rmarkdown,
@@ -41,6 +40,7 @@ Imports:
 Suggests:
     devtools (>= 1.13.0),
     plotly,
+    purrr,
     RcppRoll,
     remotes,
     rlang,
