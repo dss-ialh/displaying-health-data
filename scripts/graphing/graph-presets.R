@@ -6,11 +6,11 @@
 # before installing the `extrafont` package.
 #Run the following three lines of code once per machine (not once per session).
 # install.packages("extrafont")
-# library(extrafont) 
+# library(extrafont)
 # extrafont::font_import()
 # extrafont::fonts() #This just lists the available fonts for you to read; similar to extrafont::fonttable()
 
-library(extrafont) 
+# library(extrafont)
 library(grid)
 library(ggplot2)
 library(dichromat)
@@ -29,13 +29,13 @@ main_theme <- theme_bw() +
   theme(panel.border = element_rect(colour="gray80")) +
   theme(axis.ticks = element_line(colour="gray80"))
 
-# NoGridOrYLabelsTheme <- main_theme  + 
+# NoGridOrYLabelsTheme <- main_theme  +
 #   theme(axis.ticks.y = element_blank()) +
 #   theme(panel.grid = element_blank()) +
 #   theme(plot.margin=unit(c(.1,.2,.2,0), "lines"))
 
 #########################################################
-### Define palettes and colors 
+### Define palettes and colors
 #########################################################
 # for variable sets, so they're consistent across graphs & chapters
 
@@ -44,18 +44,18 @@ main_theme <- theme_bw() +
 # http://colorbrewer2.org/#type=qualitative&scheme=Set1&n=7
 # add colors in sequential order
 acru_colors_9 <- c(
-  "red"     = "#e41a1c" # red          
-  ,"blue"   = "#377eb8" # blue           
-  ,"green"  = "#4daf4a" # green            
-  ,"purple" = "#984ea3" # purple             
-  ,"orange" = "#ff7f00" # orange             
-  ,"yellow" = "#ffff33" # yellow             
-  ,"brown"  = "#a65628" # brown            
-  ,"pink"   = "#f781bf" # pink           
-  ,"grey"   = "#999999" # grey           
+  "red"     = "#e41a1c" # red
+  ,"blue"   = "#377eb8" # blue
+  ,"green"  = "#4daf4a" # green
+  ,"purple" = "#984ea3" # purple
+  ,"orange" = "#ff7f00" # orange
+  ,"yellow" = "#ffff33" # yellow
+  ,"brown"  = "#a65628" # brown
+  ,"pink"   = "#f781bf" # pink
+  ,"grey"   = "#999999" # grey
 )
 
-# 
+#
 # transformColor <- function( palette ) {
 #   return( palette )
 # #   return( dichromat(palette, "deutan") )
@@ -63,24 +63,24 @@ acru_colors_9 <- c(
 # #   return( dichromat(palette, "tritan") )
 # # Also see The Color Oracle application (http://colororacle.org/)
 # }
-# 
+#
 # PalettePregancyDelivery <- transformColor(adjustcolor(brewer.pal(3, "Accent"), alpha.f=1)[1:2])
 # PalettePregancyDeliveryBad <- transformColor( c("#FF0000CC", "#00FFFFCC")) #Translucent red & cyan
-# 
+#
 # PalettePregancyGroup <- transformColor(adjustcolor(brewer.pal(3, "Dark2"), alpha.f=1)[1:2])
 # PalettePregancyGroupLight <- adjustcolor(PalettePregancyGroup, alpha.f=.2)
 # PalettePregancyGroupBad <- transformColor(adjustcolor(c("blue", "maroon"), alpha.f=.7))
-# 
+#
 # PaletteObesityState <- transformColor(adjustcolor(brewer.pal(5, "Set1"))[c(1,2)])
 # PaletteObesityState <- transformColor(adjustcolor(brewer.pal(5, "Dark2"))[c(2,3)])
-# 
+#
 # PaletteWorldDeathsRestricted <- transformColor(c("#497862", "#A54891")) #Hand-picked
 # PaletteWorldDeathsRestrictedFaint <- transformColor(adjustcolor(PaletteWorldDeathsRestricted, alpha.f=.2))
-# 
+#
 # PaletteControlPsqiLight <- transformColor(c("#1A7F7C", "#1595B2")) #From http://colrd.com/palette/22521/; http://colrd.com/palette/18981/
 # PaletteControlPsqiDark <- transformColor(c("#215f5c", "#225a88")) #From http://colrd.com/palette/22521/; http://colrd.com/palette/18981/
 # #
-# 
+#
 # #Use the same palette as the crit graphs in Chapters 10-12.
 # #  * Purple is the distribution line
 # #  * Blue corresponds to the observed values
@@ -94,16 +94,16 @@ acru_colors_9 <- c(
 # # palettePregancy <- RColorBrewer::brewer.pal(n=4, name="Set2")[3:4]
 # # PaletteObesityState <-  adjustcolor(brewer.pal(4, "Set2"))[3:4]
 # # PaletteObesityStateBad <- adjustcolor(c("green", "red"), alpha.f=.7)
-# 
+#
 # #Named colors in R:
 # # http://research.stowers-institute.org/efg/R/Color/Chart/ColorChart.pdf
-# 
+#
 
 #########################################################
 ### Declare functions used in multiple documents
 #########################################################
 # #This function is directly from Recipe 13.3 in Chang (2013).
-# LimitRange <- function( fun, min, max ) { 
+# LimitRange <- function( fun, min, max ) {
 #   function( x ) {
 #     y <- fun(x)
 #     y[(x < min) | (max < x)] <- NA
@@ -120,23 +120,23 @@ acru_colors_9 <- c(
 #   qs <- c(0, 0.25, 0.5, 0.75, 1)
 #   stats <- as.numeric(quantile(y, qs, type=5))
 #   names(stats) <- c("ymin", "lower", "middle", "upper", "ymax")
-#   
+#
 #   iqr <- diff(stats[c(2, 4)])
-#   
+#
 #   outliers <- y < (stats[2] - coef * iqr) | y > (stats[4] + coef * iqr)
-#   if (any(outliers)) stats[c(1, 5)] <- range(c(stats[2:4], y[!outliers]), na.rm=TRUE)    
-#   
+#   if (any(outliers)) stats[c(1, 5)] <- range(c(stats[2:4], y[!outliers]), na.rm=TRUE)
+#
 #   df <- as.data.frame(as.list(stats))
 #   df$outliers <- I(list(y[outliers]))
-#   
-#   n <- sum(!is.na(y)) 
-#   
+#
+#   n <- sum(!is.na(y))
+#
 #   df$notchupper <- df$middle + 1.58 * iqr / sqrt(n)
 #   df$notchlower <- df$middle - 1.58 * iqr / sqrt(n)
 #   df$width <- width
 #   return( df )
 # } # TukeyBoxplot(dsPregnancy$BabyWeightInKG)
-# 
+#
 # RemoveLeadingZero <- function( x ) {
 #   #   g <- grep("\\A\\b(?<=0)(\\.\\d{1,})$", x, perl=TRUE, value=TRUE);
 #   g <- gsub("\\b(0)(\\.\\d{1,})$", "\\2", x, perl=TRUE);
@@ -146,10 +146,10 @@ acru_colors_9 <- c(
 # # RemoveLeadingZero(431.444)
 # WrapColumns <- function( d, wrapCount=3L ) {
 #   rowCountOriginal <- nrow(d)
-#   columnCountOriginal <- ncol(d)  
+#   columnCountOriginal <- ncol(d)
 #   pad <- ((rowCountOriginal %% wrapCount) > 0)
 #   rowCount <- (rowCountOriginal %/% wrapCount) + as.integer(pad)
-#   
+#
 #   dt <- matrix(NA, nrow=rowCount, ncol=columnCountOriginal*wrapCount)
 #   for( wrapIndex in seq_len(wrapCount) ) {
 #     columnIndices <- (wrapIndex-1)*columnCountOriginal + seq_len(columnCountOriginal)

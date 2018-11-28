@@ -2,6 +2,8 @@
 #This next line is run when the whole file is executed, but not when knitr calls individual chunks.
 rm(list=ls(all=TRUE)) #Clear the memory for any variables set from any previous runs.
 
+# To install the necessary packages
+# devtools::install_github("dss-ialh/displaying-health-data")
 # ---- load-sources ------------------------------------------------------------
 
 
