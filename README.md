@@ -4,21 +4,21 @@ Colloquium organized by the Insitute on Aging and Lifelong Health at the Univers
 
 # Day 1 : Health Data
 ### 1A
-[Transactional data of Island Health: How patients vote with their feet][talk1a] 
+[Transactional data of Island Health: How patients vote with their feet][talk1a]   
 Dr. Ken Moselle (Island Health) and Dr. Andriy Koval (BC Observatory, UCF)
  - [Clinical Context Coding Scheme][cccs_handout] handout 
  
 ### 1B
-[Visualizing logistic regression with the “coloring book” technique: A study in ggplot2][talk1b] 
+[Visualizing logistic regression with the “coloring book” technique: A study in ggplot2][talk1b]   
 Dr. Andriy Koval (BC Observatory for Population and Public Health, UCF)
 
 # Day 2 : Substance Use
 ### 2A 
-[Nuances of information sharing and data display in a mobile application for students with substance use disorder][talk2a] 
+[Nuances of information sharing and data display in a mobile application for students with substance use disorder][talk2a]   
 Dr. Barbara (Basia) Andraka-Christou (University of Central Florida) 
 
 ## 2B 
-[Optimizing public health surveillance through reproducible reporting: Response to opioid crisis on Vancouver Island][talk2b] 
+[Optimizing public health surveillance through reproducible reporting: Response to opioid crisis on Vancouver Island][talk2b]   
 Shannon Tracey (University of Victoria) and Maritia Gully (Island Health)
 
 # Day 3 : Dashboard & Pipelines
