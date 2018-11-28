@@ -24,11 +24,11 @@ Colloquium organized by the Insitute on Aging and Lifelong Health at the Univers
 Dr. Andriy Koval (BC Observatory, UCF) and Anthony Leamon (Island Health)
 
 [talk1a]: 
-[talk1b]:
-[talk2a]:
-[talk2b]:
-[talk3a]:
-[talk3b]:
+[talk1b]: 
+[talk2a]: 
+[talk2b]: 
+[talk3a]: 
+[talk3b]: 
 
 # Live coding 
 - Theme 1: Longitudinal perspectives
