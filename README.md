@@ -31,7 +31,7 @@ Dr. Will Beasley (University of Oklahoma Health Sciences Center)
 Dr. Andriy Koval (BC Observatory, UCF) and Anthony Leamon (Island Health)
 
 [talk1a]   
-[cccs_handout]:https://github.com/dss-ialh/clincal-context-coding-scheme  
+[cccs_handout]:https://github.com/dss-ialh/clincal-context-coding-scheme/blob/master/README.md
 [talk1b]: 
 [talk2a]: 
 [talk2b]: 
