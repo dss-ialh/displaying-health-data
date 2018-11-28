@@ -49,7 +49,7 @@ Suggests:
     testthat (>= 0.9),
     tidyr (>= 0.7.0)
 Remotes:
-  github::OuhscBbmc/OuhscMunge
+  github::OuhscBbmc/OuhscMunge,
   github::Melinae/TabularManifest
 License: GPL-3 + file LICENSE
 LazyData: TRUE
