@@ -16,7 +16,7 @@ requireNamespace("dplyr")
 # requireNamespace("scales") #For formating values in graphs
 # requireNamespace("mgcv) #For the Generalized Additive Model that smooths the longitudinal graphs.
 # requireNamespace("TabularManifest") # devtools::install_github("Melinae/TabularManifest")
-
+library(ggalluvial)
 # ---- declare-globals ---------------------------------------------------------
 options(show.signif.stars=F) #Turn off the annotations on p-values
 config                      <- config::get()
@@ -57,10 +57,14 @@ d_input
 g1 <- d_input %>%
   ggplot2::ggplot(
     aes_string(
+      # y     = "target_metric"
+      # ,axis1 = "gender_id"
+      # ,axis2 = "age_cut_4"
+      # ,fill = "race"
       y     = "target_metric"
       ,axis1 = "gender_id"
-      ,axis2 = "age_cut_4"
-      ,fill = "race"
+      ,axis2 = "race"
+      ,fill = "age_cut_4"
     )
   )
 g1
@@ -68,7 +72,12 @@ g2 <- g1 +
     ggalluvial::geom_alluvium(
       # fill = "firebrick",
       alpha = .5
-    )
+    )+
+  ggalluvial::geom_stratum(alpha = 0, color = "grey40")+
+  # ggplot2::geom_text(stat = "stratum", label.strata = TRUE)
+  ggrepel::geom_text_repel( # helps with legends to be more readable
+    stat = "stratum", label.strata = TRUE, direction = "both", color = "black", size = baseSize -6
+  )
 g2
 # ---- scatterplots ------------------------------------------------------------
 
