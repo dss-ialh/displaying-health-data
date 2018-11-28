@@ -47,7 +47,8 @@ Suggests:
     scales,
     testit,
     testthat (>= 0.9),
-    tidyr (>= 0.7.0)
+    tidyr (>= 0.7.0),
+    zoo
 Remotes:
   github::OuhscBbmc/OuhscMunge,
   github::Melinae/TabularManifest

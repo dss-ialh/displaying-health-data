@@ -4,9 +4,9 @@ rm(list=ls(all=TRUE)) #Clear the memory of variables from previous run. This is 
 #Load any source files that contain/define functions, but that don't load any other types of variables
 #   into memory.  Avoid side effects and don't pollute the global environment.
 # source("./SomethingSomething.R")
-source("./scripts/functions-common.R") # used in multiple reports
+source("./scripts/common-functions.R") # used in multiple reports
 source("./scripts/graphing/graph-presets.R") # fonts, colors, themes
-source("./scripts/graphing/graph-venn-diagram.R")
+source("./scripts/graphing/graph-alluvia.R")
 
 # ---- load-packages -----------------------------------------------------------
 library(magrittr) #Pipes
