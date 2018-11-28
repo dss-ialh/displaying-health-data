@@ -26,13 +26,14 @@ Shannon Tracey (University of Victoria) and Maritia Gully (Island Health)
 ## 3A 
 [Building pipelines and dashboards for practitioners: Mobilizing knowledge with reproducible reporting][talk3a] 
 Dr. Will Beasley (University of Oklahoma Health Sciences Center)
-# 3B 
+
+## 3B 
 [Constructing workflows for reproducible analytics: Suppressing small counts for provincial chronic disease dashboard][talk3a]
 Dr. Andriy Koval (BC Observatory, UCF) and Anthony Leamon (Island Health)
 
-[talk1a]   
-[cccs_handout]:https://github.com/dss-ialh/clincal-context-coding-scheme/blob/master/README.md
-[talk1b]: 
+[talk1a]:https://drive.google.com/open?id=14swb2d7UKwFQuN6CRQM22jRbQcD80RSa   
+[cccs_handout]:https://drive.google.com/open?id=1pQNX-dcLOZHrUxYve6ewKnZ8UgbrZllA
+[talk1b]:https://drive.google.com/open?id=1ALz8dc-bTNSMwxEwMDwe-l5xlmaAtme2 
 [talk2a]: 
 [talk2b]: 
 [talk3a]: 
