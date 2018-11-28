@@ -64,9 +64,16 @@ Dr. Andriy Koval (BC Observatory, UCF) and Anthony Leamon (Island Health)
 
 ### Installation and Documentation
 
-The repo dependencies can be installed from [GitHub](https://github.com/dss-ialh/displaying-health-data) after installing the `remotes` package.
+Please execute the following steps:
+1. **[R](http://cran.r-project.org/)** is the centerpiece of the analysis. Every few months, you'll need to download the most recent version.  {added Sept 2012}
 
+2. **[RStudio Desktop](http://www.rstudio.com/ide/download/desktop)** is the IDE (integrated design interface) that you'll use to interact with R, GitHub, Markdown, and LaTeX. Updates can be checked easily through the menus `Help` -> `Check for updates`.   {added Sept 2012}
+
+3. Install packages needed for this project by executing the following lines:
 ```r
+utils::install.packages("devtools")
+devtools::source_gist("2c5e7459b88ec28b9e8fa0c695b15ee3", filename="package-janitor-bbmc.R")
+package_janitor_remote("https://raw.githubusercontent.com/OuhscBbmc/RedcapExamplesAndPatterns/master/utility/package-dependency-list.csv")
 install.packages("remotes") # Run this line if the 'remotes' package isn't installed already.
 remotes::install_github(repo="dss-ialh/displaying-health-data")
-```
+ ``` 
