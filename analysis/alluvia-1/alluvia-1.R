@@ -4,9 +4,9 @@ rm(list=ls(all=TRUE)) #Clear the memory of variables from previous run. This is 
 #Load any source files that contain/define functions, but that don't load any other types of variables
 #   into memory.  Avoid side effects and don't pollute the global environment.
 # source("./SomethingSomething.R")
-source("./scripts/functions-common.R") # used in multiple reports
+source("./scripts/common-functions.R") # used in multiple reports
 source("./scripts/graphing/graph-presets.R") # fonts, colors, themes
-source("./scripts/graphing/graph-venn-diagram.R")
+source("./scripts/graphing/graph-alluvia.R")
 
 # ---- load-packages -----------------------------------------------------------
 library(magrittr) #Pipes
@@ -34,10 +34,27 @@ ds <- ds %>%
     age_at_visit = age
     # ,date_at_visit = year
     ,fu_year = wave_id
+    ,id_counter = 1
   )
 
 # ---- basic-graph -------------------------------------------------------------
 
+g1 <- ds %>%
+  ggplot2::ggplot(
+    aes_string(
+      y     = "id_counter"
+      ,axis1 = "gender_id"
+      ,axis2 = "age_cut_4"
+      ,fill = "race"
+    )
+  )
+g1
+g2 <- g1 +
+    ggalluvial::geom_alluvium(
+      # fill = "firebrick",
+      alpha = .5
+    )
+g2
 # ---- scatterplots ------------------------------------------------------------
 
 # ---- models ------------------------------------------------------------------
