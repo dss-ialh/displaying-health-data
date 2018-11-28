@@ -38,6 +38,8 @@ Imports:
     yaml
 Suggests:
     devtools (>= 1.13.0),
+    ggalluvial,
+    ggrepel,
     plotly,
     purrr,
     RcppRoll,
