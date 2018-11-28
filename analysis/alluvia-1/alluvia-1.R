@@ -35,14 +35,29 @@ ds <- ds %>%
     # ,date_at_visit = year
     ,fu_year = wave_id
     ,id_counter = 1
+  ) %>%
+  dplyr::mutate(
+    gender_id = factor(gender_id, levels = c(1,2, 255), labels = c("Men","Women", "Missing"))
   )
 
 # ---- basic-graph -------------------------------------------------------------
+ds %>% dplyr::glimpse()
 
-g1 <- ds %>%
+d_input <- ds %>%
+  # rename the target variable for easier syntax (part 1)
+  dplyr::group_by(gender_id, age_cut_4, race) %>%
+  dplyr::summarize(
+    target_metric = length(unique(id_counter))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::arrange(gender_id, age_cut_4)
+# rename it back (part 2)
+d_input
+
+g1 <- d_input %>%
   ggplot2::ggplot(
     aes_string(
-      y     = "id_counter"
+      y     = "target_metric"
       ,axis1 = "gender_id"
       ,axis2 = "age_cut_4"
       ,fill = "race"
