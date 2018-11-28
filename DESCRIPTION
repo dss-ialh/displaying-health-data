@@ -32,7 +32,6 @@ Imports:
     RColorBrewer,
     readr (>= 1.2.1),
     rmarkdown,
-    scales,
     sessioninfo,
     TabularManifest,
     tibble (>= 1.4.0),
@@ -45,6 +44,7 @@ Suggests:
     remotes,
     rlang,
     RSQLite,
+    scales,
     testit,
     testthat (>= 0.9),
     tidyr (>= 0.7.0)
