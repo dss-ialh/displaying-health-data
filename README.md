@@ -39,8 +39,8 @@ Colloquium organized by the Insitute on Aging and Lifelong Health at the Univers
 [Constructing workflows for reproducible analytics: Suppressing small counts for provincial chronic disease dashboard][talk3a]
 Dr. Andriy Koval (BC Observatory, UCF) and Anthony Leamon (Island Health)
 
-[talk1a]: 
-[cccs_handout]:https://github.com/dss-ialh/clincal-context-coding-scheme
+[talk1a]:   
+[cccs_handout]: https://github.com/dss-ialh/clincal-context-coding-scheme  
 [talk1b]: 
 [talk2a]: 
 [talk2b]: 
