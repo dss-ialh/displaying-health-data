@@ -43,6 +43,12 @@ ds <- ds %>%
 # ---- basic-graph -------------------------------------------------------------
 ds %>% dplyr::glimpse()
 
+axis1_ = "gender_id"
+axis2_ = "race"
+axis1_label = axis1_
+axis1_label = toupper(axis1_)
+
+
 d_input <- ds %>%
   # rename the target variable for easier syntax (part 1)
   dplyr::group_by(gender_id, age_cut_4, race) %>%
@@ -62,8 +68,8 @@ g1 <- d_input %>%
       # ,axis2 = "age_cut_4"
       # ,fill = "race"
       y     = "target_metric"
-      ,axis1 = "gender_id"
-      ,axis2 = "race"
+      ,axis1 = axis1_#"gender_id"
+      ,axis2 = axis2_ #"race"
       ,fill = "age_cut_4"
     )
   )
@@ -77,6 +83,12 @@ g2 <- g1 +
   # ggplot2::geom_text(stat = "stratum", label.strata = TRUE)
   ggrepel::geom_text_repel( # helps with legends to be more readable
     stat = "stratum", label.strata = TRUE, direction = "both", color = "black", size = baseSize -6
+  )+
+  scale_x_discrete(
+    # limits = c("gender_id", "race")
+    limits = c(axis1_, axis2_)
+    , expand = c(.05, .05)
+    ,position = "top"
   )
 g2
 # ---- scatterplots ------------------------------------------------------------
