@@ -76,7 +76,7 @@ read_chunk("./analysis/dashboard-1/dashboard-1.R") #This allows knitr to call ch
 Summary
 =============================================
 
-This dashboard helps facilitate the CQI analyses VIHA E.H.R. (early cognitive recline) project.
+This dashboard helps facilitate the CQI analyses VIHA E.C.R. (early cognitive recline) project.
 
 ## Overall {.tabset data-width=300}
 
