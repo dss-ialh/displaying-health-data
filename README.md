@@ -36,6 +36,7 @@ Dr. Will Beasley ([University of Oklahoma Health Sciences Center](https://ouhsc.
 Dr. Andriy Koval ([BC Observatory](http://www.bccdc.ca/our-services/programs/bc-observatory-for-pop-public-health), [UCF](https://www.ucf.edu/)) and Anthony Leamon ([Island Health](https://www.islandhealth.ca/))
 
 - [presentation slides][talk3b] 
+- [suppress-for-release][suppress-for-release] project
 
 [talk1a]:https://drive.google.com/open?id=14swb2d7UKwFQuN6CRQM22jRbQcD80RSa   
 [cccs_handout]:https://drive.google.com/open?id=1pQNX-dcLOZHrUxYve6ewKnZ8UgbrZllA
@@ -44,6 +45,7 @@ Dr. Andriy Koval ([BC Observatory](http://www.bccdc.ca/our-services/programs/bc-
 [talk2b]:
 [talk3a]:https://raw.githack.com/dss-ialh/displaying-health-data/master/documentation/products/beasley/dhd-2018-uvic-3-a-beasley-2018-11-29.pdf
 [talk3b]:https://drive.google.com/open?id=189-CqQO_MklrEBtowV4GfjQV_emvDkME
+[suppress-for-release]:https://github.com/IHACRU/suppress-for-release
 
 # Shared Documents
 - master copy of the [detailed schedule][schedule] for both lectures and live coding session
