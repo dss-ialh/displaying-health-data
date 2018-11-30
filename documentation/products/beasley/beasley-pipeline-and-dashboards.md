@@ -1,3 +1,4 @@
+Hi my name is Will, and I'd like to discuss dashboards and their pipelines
 
 1. Describe what the BBMC does
     1. Coordinate 5+ statisticians on large projects involving transactional data
