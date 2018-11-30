@@ -28,19 +28,22 @@ Shannon Tracey ([University of Victoria](https://www.uvic.ca/)) and Maritia Gull
 [Building pipelines and dashboards for practitioners: Mobilizing knowledge with reproducible reporting][talk3a]
 Dr. Will Beasley ([University of Oklahoma Health Sciences Center](https://ouhsc.edu/bbmc/team/))
 
-[Live Demo](https://raw.githack.com/dss-ialh/displaying-health-data/master/analysis/dashboard-1/dashboard-1.html)
+- [presentation slides][talk3b] 
+- [Live Demo](https://raw.githack.com/dss-ialh/displaying-health-data/master/analysis/dashboard-1/dashboard-1.html)
 
 ## 3B
 [Constructing workflows for reproducible analytics: Suppressing small counts for provincial chronic disease dashboard][talk3a]
 Dr. Andriy Koval ([BC Observatory](http://www.bccdc.ca/our-services/programs/bc-observatory-for-pop-public-health), [UCF](https://www.ucf.edu/)) and Anthony Leamon ([Island Health](https://www.islandhealth.ca/))
+
+- [presentation slides][talk3b] 
 
 [talk1a]:https://drive.google.com/open?id=14swb2d7UKwFQuN6CRQM22jRbQcD80RSa   
 [cccs_handout]:https://drive.google.com/open?id=1pQNX-dcLOZHrUxYve6ewKnZ8UgbrZllA
 [talk1b]:https://drive.google.com/open?id=1ALz8dc-bTNSMwxEwMDwe-l5xlmaAtme2
 [talk2a]:
 [talk2b]:
-[talk3a]:
-[talk3b]:
+[talk3a]:https://raw.githack.com/dss-ialh/displaying-health-data/master/documentation/products/beasley/dhd-2018-uvic-3-a-beasley-2018-11-29.pdf
+[talk3b]:https://drive.google.com/open?id=189-CqQO_MklrEBtowV4GfjQV_emvDkME
 
 # Shared Documents
 - master copy of the [detailed schedule][schedule] for both lectures and live coding session
