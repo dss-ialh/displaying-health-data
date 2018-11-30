@@ -42,6 +42,7 @@ ds <-
   # dplyr::filter(county %in% desired_counties) %>%
   dplyr::mutate(
     emphasis        = dplyr::if_else(county_id == county_id_focus, "focus", "background"),
+    focus           = as.integer(county_id == county_id_focus),
     county_id       = factor(county_id)
   )
 
@@ -55,6 +56,7 @@ ds_county <-
   ) %>%
   dplyr::mutate(
     emphasis        = dplyr::if_else(county_id == county_id_focus, "focus", "background"),
+    focus           = as.integer(county_id == county_id_focus),
     county_id       = factor(county_id)
   )
 
@@ -63,6 +65,9 @@ ds_county_year <-
   tibble::as_tibble() %>%
   dplyr::mutate(
     emphasis        = dplyr::if_else(county_id == county_id_focus, "focus", "background"),
+    focus           = as.integer(county_id == county_id_focus),
+    # focus2           = (county_id == county_id_focus),
+    # size            = dplyr::if_else(county_id == county_id_focus, 1, .50),
     county_id       = factor(county_id)
   )
 
@@ -146,11 +151,28 @@ ds_county_year %>%
     x = ~year,
     y = ~cog_1_mean,
     type = 'scatter',
-    mode = "markers+lines",
+    mode = "lines",
     color = ~county,
     colors = palette_county_dark,
+    # visible = FALSE,
+    size   = ~focus,
+    sizes  = c(1, 4),
     text = ~sprintf(
       "<br>For county %s during %4i,<br>the average Cog 1 score was %1.2f.",
+      county, year, cog_1_mean
+    )
+  ) %>%
+  # dplyr::ungroup() %>%
+  plotly::add_markers(
+    size   = ~focus,
+    # symbol   = ~emphasis,
+    # symbols = c("focus"= "circle", "background"="circle-open"),
+    marker = list(size = rep(c(100), each=15), symbol=rep("circle-open", each=15)),
+    # marker = list(size = rep(c(100), each=15), marker=rep("circle-open", each=15)),
+    # sizes  = c(40, 20),
+    showlegend = F,
+    text = ~sprintf(
+      "<br>For %s county during %4i,<br>the average Cog 1 score was %1.2f.",
       county, year, cog_1_mean
     )
   ) %>%
@@ -195,25 +217,59 @@ spaghetti_1(
   group_variable      = "county",
   facet_variable      = NULL,
   palette             = palette_county_dark,
-  path_in_annotation  = NULL,
+  path_in_annotation  = path_in_annotation,
   width               = c("focus"=2, "background"=1),
   base_size           = 18
-)
+) %>%
+  plotly::ggplotly() %>%
+  plotly::hide_legend()
 
 
 cat("\n\n### Cog 1<br/><b>Subject-Year</b>\n\n")
-spaghetti_1(
-  d                   = ds,
-  response_variable   = "cog_1",
-  time_variable       = "year",
-  color_variable      = "county",
-  group_variable      = "subject_id",
-  facet_variable      = NULL,
-  palette             = palette_county_dark,
-  path_in_annotation  = NULL,
-  width               = c("focus"=2, "background"=1),
-  base_size           = 18
-)
+ds %>%
+  dplyr::group_by(subject_id) %>%
+  plot_ly(
+    x = ~year,
+    y = ~cog_1,
+    type = 'scatter',
+    mode = "lines",
+    color = ~county,
+    colors = palette_county_dark,
+    # visible = FALSE,
+    size   = ~focus,
+    sizes  = c(1, 4),
+    text = ~sprintf(
+      "<br>For subject %s during %4i<br>(in %s county),<br>the Cog 1 score was %1.2f.",
+      subject_id, year, county, cog_1
+    )
+  ) %>%
+  dplyr::ungroup() %>%
+  layout(
+    # showlegend = FALSE,
+    legend = list(orientation = 'h'),
+    xaxis = list(title=NA),
+    yaxis = list(
+      title = "Cog 1",
+      titlefont = list(
+        family = "Courier New, monospace",
+        size = 18,
+        color = "#7f7f7f"
+      )
+    )
+  )
+
+# spaghetti_1(
+#   d                   = ds,
+#   response_variable   = "cog_1",
+#   time_variable       = "year",
+#   color_variable      = "county",
+#   group_variable      = "subject_id",
+#   facet_variable      = NULL,
+#   palette             = palette_county_dark,
+#   path_in_annotation  = path_in_annotation,
+#   width               = c("focus"=2, "background"=1),
+#   base_size           = 18
+# )
 
 cat("\n\n### Cog 2<br/><b>Subject-Year</b>\n\n")
 spaghetti_1(
@@ -224,7 +280,7 @@ spaghetti_1(
   group_variable      = "subject_id",
   facet_variable      = NULL,
   palette             = palette_county_dark,
-  path_in_annotation  = NULL,
+  path_in_annotation  = path_in_annotation,
   width               = c("focus"=2, "background"=1),
   base_size           = 18
 )
@@ -238,10 +294,12 @@ spaghetti_1(
   group_variable      = "subject_id",
   facet_variable      = NULL,
   palette             = palette_county_dark,
-  path_in_annotation  = NULL,
+  path_in_annotation  = path_in_annotation,
   width               = c("focus"=2, "background"=1),
   base_size           = 18
-)
+) %>%
+  plotly::ggplotly() %>%
+  plotly::hide_legend()
 
 
 # ---- marginals ---------------------------------------------------------------

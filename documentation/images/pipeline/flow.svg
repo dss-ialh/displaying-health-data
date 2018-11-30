@@ -60,16 +60,6 @@
          offset="0"
          id="stop4587" />
     </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4727"
-       id="linearGradient4769"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.0983284,0,0,0.1035022,22.299442,123.68562)"
-       x1="22.584274"
-       y1="181.56256"
-       x2="244.92856"
-       y2="181.56256" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -78,18 +68,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="284.43546"
-     inkscape:cy="523.37767"
+     inkscape:zoom="1.4"
+     inkscape:cx="501.40496"
+     inkscape:cy="522.73238"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g4966-6-2"
      showgrid="false"
      inkscape:window-width="1853"
      inkscape:window-height="1025"
      inkscape:window-x="67"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
-     inkscape:snap-text-baseline="false" />
+     inkscape:snap-text-baseline="false"
+     inkscape:snap-grids="false" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -107,20 +98,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-87)">
-    <rect
-       style="fill:none;stroke-width:0.26458332"
-       id="rect4631"
-       width="53.721176"
-       height="18.307962"
-       x="22.584274"
-       y="125.68024" />
-    <rect
-       style="fill:none;stroke-width:0.26458332"
-       id="rect4683"
-       width="73.098221"
-       height="27.395123"
-       x="22.584274"
-       y="143.9882" />
     <flowRoot
        xml:space="preserve"
        id="flowRoot4713"
@@ -133,21 +110,105 @@
            x="574.28571"
            y="165.12938" /></flowRegion><flowPara
          id="flowPara4719">Raw CSVs</flowPara><flowPara
-         id="flowPara4721" /></flowRoot>    <rect
-       style="fill:none;stroke:url(#linearGradient4769);stroke-width:0.02669172"
-       id="rect4723"
-       width="21.862759"
-       height="7.7780566"
-       x="24.520115"
-       y="138.58871" />
-    <flowRoot
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.08127594px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none"
-       id="flowRoot4771"><flowRegion
-         id="flowRegion4773"><use
-           x="0"
-           y="0"
-           xlink:href="#rect4723"
-           id="use4775" /></flowRegion><flowPara
-         id="flowPara4777">Raw CSVs</flowPara></flowRoot>  </g>
+         id="flowPara4721" /></flowRoot>    <g
+       id="g4966">
+      <rect
+         y="99.829529"
+         x="22.629147"
+         height="8.123518"
+         width="36.954712"
+         id="rect4723"
+         style="fill:#c6e9af;stroke:none;stroke-width:0.03546464" />
+      <flowRoot
+         transform="translate(-9.4494048,-64.185777)"
+         id="flowRoot4771"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#5aa02c;fill-opacity:1;stroke:none"
+         xml:space="preserve"><flowRegion
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#5aa02c"
+           id="flowRegion4773"><use
+             transform="translate(9.4494048,64.611001)"
+             height="100%"
+             width="100%"
+             id="use4775"
+             xlink:href="#rect4723"
+             y="0"
+             x="0" /></flowRegion><flowPara
+           id="flowPara4777">Raw CSVs</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(4.0509208,31.815486)"
+       id="g4966-6">
+      <rect
+         y="99.829529"
+         x="22.629147"
+         height="8.123518"
+         width="36.954712"
+         id="rect4723-7"
+         style="fill:#c6e9af;stroke:none;stroke-width:0.03546464" />
+      <flowRoot
+         transform="translate(-9.4494048,-64.185777)"
+         id="flowRoot4771-7"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#5aa02c;fill-opacity:1;stroke:none"
+         xml:space="preserve"><flowRegion
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#5aa02c"
+           id="flowRegion4773-4"><use
+             transform="translate(9.4494048,64.611001)"
+             height="100%"
+             width="100%"
+             id="use4775-0"
+             xlink:href="#rect4723-7"
+             y="0"
+             x="0" /></flowRegion><flowPara
+           id="flowPara4777-6"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">mlm.csv</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(26.675769,72.446972)"
+       id="g4966-6-2">
+      <rect
+         y="86.033394"
+         x="0.13956302"
+         height="8.123518"
+         width="36.954712"
+         id="rect4723-7-6"
+         style="fill:#c6e9af;stroke:none;stroke-width:0.03546464" />
+      <flowRoot
+         transform="translate(-9.4494048,-64.185777)"
+         id="flowRoot4771-7-0"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#5aa02c;fill-opacity:1;stroke:none"
+         xml:space="preserve"><flowRegion
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#5aa02c"
+           id="flowRegion4773-4-6"><use
+             transform="translate(9.4494048,64.611001)"
+             height="100%"
+             width="100%"
+             id="use4775-0-6"
+             xlink:href="#rect4723-7-6"
+             y="0"
+             x="0" /></flowRegion><flowPara
+           id="flowPara5172">county.csv</flowPara></flowRoot>      <g
+         transform="translate(-20.085112,24.316917)"
+         id="g4966-6-9">
+        <rect
+           y="99.829529"
+           x="22.629147"
+           height="8.123518"
+           width="36.954712"
+           id="rect4723-7-60"
+           style="fill:#c6e9af;stroke:none;stroke-width:0.03546464" />
+        <flowRoot
+           transform="translate(-9.4494048,-64.185777)"
+           id="flowRoot4771-7-7"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#5aa02c;fill-opacity:1;stroke:none"
+           xml:space="preserve"><flowRegion
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.3499999px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#5aa02c"
+             id="flowRegion4773-4-0"><use
+               transform="translate(9.4494048,64.611001)"
+               height="100%"
+               width="100%"
+               id="use4775-0-1"
+               xlink:href="#rect4723-7-60"
+               y="0"
+               x="0" /></flowRegion><flowPara
+             id="flowPara5190">te.csv</flowPara></flowRoot>      </g>
+    </g>
+  </g>
 </svg>

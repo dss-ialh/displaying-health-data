@@ -9,6 +9,7 @@
         1. CQI for home visiting nurses
         1. training for CBT therapists
         1. CPS worker assignments
+        1. patient eligibility for pharmaco study
 1. Pipeline
     1. The next hour is primarily about dashboards, but I'd like to spend 5 minutes on the upstream stages, which makes the analysis possible.
     1. This is a simplified pipeline created for this presentation, so I won't be distracted by the cool content of the real projects.  (It also provides a way for the audience to run the code, without exposing PHI.)
@@ -27,4 +28,5 @@
 1. Lessons learned
     1. Writing the scribes is really difficult, particularly for these monitoring scenarios.  That's another 20 minute talk.
     1. This particular group of nurses preferred a top-down entry into their data.  Most scientists prefer bottom-up.  Here are some examples of how we changed our presentation.
-    1. Hovering text provides an alternative entiy into understanding the graph
+    1. Hovering text provides an alternative entry into understanding the graph.  Showing a textual representation of the coordinates wasn't helpful for some.  The hover text were complete sentences, like "For Tulsa county in 2004, the average cognitive score was 5.5" in spaghetti plots and "" in histograms.
+    1. Monthly meetings are not frequent enough at the beginning.
