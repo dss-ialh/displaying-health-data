@@ -16,7 +16,8 @@ Dr. Andriy Koval ([BC Observatory](http://www.bccdc.ca/our-services/programs/bc-
 # Day 2 : Substance Use
 ## 2A
 [Nuances of information sharing and data display in a mobile application for students with substance use disorder][talk2a]
-Dr. Barbara (Basia) Andraka-Christou ([University of Central Florida]((https://www.ucf.edu/)))
+Dr. Barbara (Basia) Andraka-Christou ([University of Central Florida]((https://www.ucf.edu/)), Department of [Health Management and Informatics][hmi])
+[hmi]:https://ccie.ucf.edu/hmi/welcome/
 
 ## 2B
 [Optimizing public health surveillance through reproducible reporting: Response to opioid crisis on Vancouver Island][talk2b]
