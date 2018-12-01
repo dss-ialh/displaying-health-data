@@ -41,7 +41,7 @@ Dr. Andriy Koval ([BC Observatory](http://www.bccdc.ca/our-services/programs/bc-
 [talk1a]:https://drive.google.com/open?id=14swb2d7UKwFQuN6CRQM22jRbQcD80RSa   
 [cccs_handout]:https://drive.google.com/open?id=1pQNX-dcLOZHrUxYve6ewKnZ8UgbrZllA
 [talk1b]:https://drive.google.com/open?id=1ALz8dc-bTNSMwxEwMDwe-l5xlmaAtme2
-[talk2a]:
+[talk2a]:https://drive.google.com/file/d/1NSuSFeYBCJyUxA_JHWYutsmK9dQZwwNg/view?usp=sharing
 [talk2b]:
 [talk3a]:https://raw.githack.com/dss-ialh/displaying-health-data/master/documentation/products/beasley/dhd-2018-uvic-3-a-beasley-2018-11-29.pdf
 [talk3b]:https://drive.google.com/open?id=189-CqQO_MklrEBtowV4GfjQV_emvDkME
