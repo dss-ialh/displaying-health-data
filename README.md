@@ -3,9 +3,9 @@ Colloquium organized by the Institute on Aging and Lifelong Health at the Univer
 [digital poster][digicaster] - [print poster][poster]
 
 # Recorded Videos
- - [Day 1][day-1-recording] 
- - [Day 2][day-2-recording]
- - Day 3 (pending
+ - [Day 1 recording][day-1-recording] 
+ - [Day 2 recording][day-2-recording]
+ - Day 3 (pending)
 
 [day-1-recording]:https://www.youtube.com/watch?v=oMkACvpE5jg&t=3330s
 [day-2-recording]:https://www.youtube.com/watch?v=XfPLIsMvVaY
@@ -26,7 +26,7 @@ Dr. Andriy Koval ([BC Observatory](http://www.bccdc.ca/our-services/programs/bc-
 
 # Day 2 : Substance Use
 
-[Day 2][day-2-recording]
+[Day 2 recording][day-2-recording]
 
 ## 2A
 [Nuances of information sharing and data display in a mobile application for students with substance use disorder][talk2a]
