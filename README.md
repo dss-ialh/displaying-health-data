@@ -12,6 +12,7 @@ Colloquium organized by the Institute on Aging and Lifelong Health at the Univer
 
 # Day 1 : Health Data
 
+[Day 1 recording][day-1-recording] 
 
 ## 1A
 [Transactional data of Island Health: How patients vote with their feet][talk1a]
@@ -22,7 +23,11 @@ Dr. Ken Moselle (Island Health) and Dr. Andriy Koval ([BC Observatory](http://ww
 [Visualizing logistic regression with the “coloring book” technique: A study in ggplot2][talk1b]
 Dr. Andriy Koval ([BC Observatory](http://www.bccdc.ca/our-services/programs/bc-observatory-for-pop-public-health), [UCF](https://www.ucf.edu/))
 
+
 # Day 2 : Substance Use
+
+[Day 2][day-2-recording]
+
 ## 2A
 [Nuances of information sharing and data display in a mobile application for students with substance use disorder][talk2a]
 Dr. Barbara (Basia) Andraka-Christou ([University of Central Florida]((https://www.ucf.edu/)), Department of [Health Management and Informatics][hmi])
