@@ -2,7 +2,16 @@
 Colloquium organized by the Institute on Aging and Lifelong Health at the University of Victoria
 [digital poster][digicaster] - [print poster][poster]
 
+# Recorded Videos
+ - [Day 1][day-1-recording] 
+ - [Day 2][day-2-recording]
+ - Day 3 (pending
+
+[day-1-recording]:https://www.youtube.com/watch?v=oMkACvpE5jg&t=3330s
+[day-2-recording]:https://www.youtube.com/watch?v=XfPLIsMvVaY
+
 # Day 1 : Health Data
+
 
 ## 1A
 [Transactional data of Island Health: How patients vote with their feet][talk1a]
